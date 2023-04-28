@@ -9,6 +9,7 @@ class MainWindow:
     def __init__(self, root):
         root.title("Rubbish Steganography")
         window.geometry("420x440")
+        notebook = ttk.Notebook(root)
         top_frame = Frame(root)
         middle_frame = Frame(root)
         bottom_frame = Frame(root)
@@ -33,7 +34,9 @@ class MainWindow:
         cover_btn = Button(top_frame, text="Choose Image", command=pick_cover)
         hidden_lbl = ttk.Label(top_frame, textvariable=hidden_str, wraplength=250)
         hidden_btn = Button(top_frame, text="Choose File", command=pick_hidden)
+        cover_canvas_label = ttk.Label(middle_frame, text="Cover Image")
         cover_canvas = Canvas(middle_frame, bd=2,  width=150, height=150, relief="groove")
+        hidden_canvas_label = ttk.Label(middle_frame, text="Hidden File")
         hidden_canvas = Canvas(middle_frame, bd=2, width=150, height=150, relief="ridge")
         arrow_lbl = Label(middle_frame, text="<-")
         load_stego_btn = Button(bottom_frame, text="Load Stego", command=pick_stego)
@@ -65,9 +68,11 @@ class MainWindow:
         hidden_btn.grid(column=1, row=1, sticky="E,W", padx=4, pady=6)
 
         #  Middle Frame
-        cover_canvas.grid(column=0, row=0)
-        arrow_lbl.grid(column=1, row=0)
-        hidden_canvas.grid(column=2, row=0)
+        cover_canvas_label.grid(column=0, row=0)
+        cover_canvas.grid(column=0, row=1)
+        arrow_lbl.grid(column=1, row=1)
+        hidden_canvas_label.grid(column=2, row=0)
+        hidden_canvas.grid(column=2, row=1)
 
         #bottom Frame
         load_stego_btn.grid(column=0, row=0, sticky="E", padx=4, pady=6)
