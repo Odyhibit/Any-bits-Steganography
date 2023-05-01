@@ -8,11 +8,18 @@ class MainWindow:
 
     def __init__(self, root):
         root.title("Rubbish Steganography")
-        window.geometry("420x440")
+        #window.geometry("500x500")
         notebook = ttk.Notebook(root)
-        top_frame = Frame(root)
-        middle_frame = Frame(root)
-        bottom_frame = Frame(root)
+        notebook.pack(expand=True)
+
+        # main screen
+        main_screen = Frame(notebook)
+        top_frame = Frame(main_screen)
+        middle_frame = Frame(main_screen)
+        bottom_frame = Frame(main_screen)
+
+        # setting screen
+        setting_screen = Frame(notebook)
 
         cover_str = StringVar()
         cover_str.set("Cover Image")
@@ -34,16 +41,17 @@ class MainWindow:
         cover_btn = Button(top_frame, text="Choose Image", command=pick_cover)
         hidden_lbl = ttk.Label(top_frame, textvariable=hidden_str, wraplength=250)
         hidden_btn = Button(top_frame, text="Choose File", command=pick_hidden)
+
         cover_canvas_label = ttk.Label(middle_frame, text="Cover Image")
-        cover_canvas = Canvas(middle_frame, bd=2,  width=150, height=150, relief="groove")
+        cover_canvas = Canvas(middle_frame, bd=2, width=150, height=150, relief="groove")
         hidden_canvas_label = ttk.Label(middle_frame, text="Hidden File")
         hidden_canvas = Canvas(middle_frame, bd=2, width=150, height=150, relief="ridge")
         arrow_lbl = Label(middle_frame, text="<-")
+
         load_stego_btn = Button(bottom_frame, text="Load Stego", command=pick_stego)
         save_output_btn = Button(bottom_frame, text="Save Output", state="disabled")
         save_stego_btn = Button(bottom_frame, text="Save Stego Image", state="disabled")
         stego_lbl = Label(bottom_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
-
 
         #  Frame Layout
         top_frame.grid(padx=20, pady=20, sticky="E,W")
@@ -60,7 +68,6 @@ class MainWindow:
         bottom_frame.columnconfigure(1, minsize=100)
         bottom_frame.columnconfigure(2, minsize=100)
 
-
         #  Top Frame
         cover_lbl.grid(column=0, row=0, padx=4, pady=6)
         hidden_lbl.grid(column=0, row=1, padx=4, pady=6)
@@ -74,12 +81,15 @@ class MainWindow:
         hidden_canvas_label.grid(column=2, row=0)
         hidden_canvas.grid(column=2, row=1)
 
-        #bottom Frame
+        # bottom Frame
         load_stego_btn.grid(column=0, row=0, sticky="E", padx=4, pady=6)
         save_output_btn.grid(column=1, row=0, padx=4, pady=6)
         save_stego_btn.grid(column=2, row=0, sticky="W", padx=4, pady=6)
         stego_lbl.grid(columnspan=3, row=1, sticky="E,W", padx=4, pady=6)
 
+        # notebook tabs
+        notebook.add(main_screen, text="Files")
+        notebook.add(setting_screen, text="Settings")
 
 
 if __name__ == '__main__':
