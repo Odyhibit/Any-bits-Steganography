@@ -1,6 +1,7 @@
 import tkinter.filedialog
 from tkinter import *
 from tkinter import ttk
+from PIL import Image, ImageTk
 
 
 class MainWindow:
@@ -10,6 +11,9 @@ class MainWindow:
         def pick_cover():
             cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
             print_bit_planes()
+            cover_img = ImageTk.PhotoImage(Image.open(cover_str.get()))
+            print(type(cover_img), cover_img.width())
+            cover_canvas.create_image(10, 10, anchor=NW, image=cover_img)
 
         def pick_stego():
             cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
@@ -48,7 +52,7 @@ class MainWindow:
         stego_str = StringVar()
 
         # setting screen variables (bit plane checkboxes)
-        a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(value=True), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
+        a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         r7, r6, r5, r4, r3, r2, r1, r0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         g7, g6, g5, g4, g3, g2, g1, g0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
