@@ -1,7 +1,16 @@
 from PIL import Image
 
 
-def hide_bit(original: int, bit: int) -> int:
+def to_int(seven: bool, six: bool, five: bool, four: bool, three: bool, two: bool, one: bool, zero: bool) -> int:
+    # print((seven << 7), (six << 6), (five << 5), (four << 4), (three << 3), (two << 2), (one << 1), int(zero))
+    return (seven << 7) + (six << 6) + (five << 5) + (four << 4) + (three << 3) + (two << 2) + (one << 1) + int(zero)
+
+
+def bits_per_pixel(alpha: int, red: int, green: int, blue: int) -> int:
+    return alpha.bit_count() + red.bit_count() + green.bit_count() + blue.bit_count()
+
+
+def hide_bits(original: [], bit: int) -> int:
     striped = original & 0b01111111
     hidden_bit = bit << 7
     return striped + hidden_bit
@@ -24,7 +33,6 @@ def stego(cover_file: str, hidden_file: str):
                 if len(b_message) > 0:
                     bit_to_hide = b_message[0:1]
                     image_byte = px[x, y]
-                    px[x, y] = hide_bit(image_byte, int(bit_to_hide))
                     b_message = b_message[1:]
         img.save("test.png")
 
