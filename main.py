@@ -6,14 +6,24 @@ from tkinter import ttk
 class MainWindow:
 
     def __init__(self, root):
+
         def pick_cover():
             cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
+            print_bit_planes()
 
         def pick_stego():
             cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
 
         def pick_hidden():
             hidden_str.set(tkinter.filedialog.askopenfilename(filetypes=[]))
+
+        def print_bit_planes():
+            print(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
+            print(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
+            print(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
+            print(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
+
+
 
         root.title("Rubbish Steganography")
         # window.geometry("500x500")
@@ -38,7 +48,7 @@ class MainWindow:
         stego_str = StringVar()
 
         # setting screen variables (bit plane checkboxes)
-        a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
+        a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(value=True), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         r7, r6, r5, r4, r3, r2, r1, r0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         g7, g6, g5, g4, g3, g2, g1, g0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
         b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
@@ -61,10 +71,10 @@ class MainWindow:
         stego_lbl = Label(bottom_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
 
         # setting screen widgets
-        alpha_lbl = ttk.Label(bit_planes_frame, text="Alpha")
-        red_lbl = ttk.Label(bit_planes_frame, text="Red")
-        green_lbl = ttk.Label(bit_planes_frame, text="Green")
-        blue_lbl = ttk.Label(bit_planes_frame, text="Blue")
+        alpha_lbl = Label(bit_planes_frame, text="Alpha")
+        red_lbl = Label(bit_planes_frame, text="Red")
+        green_lbl = Label(bit_planes_frame, text="Green")
+        blue_lbl = Label(bit_planes_frame, text="Blue")
         alpha_7_chk = Checkbutton(bit_planes_frame, text="7", variable=a7)
         alpha_6_chk = Checkbutton(bit_planes_frame, text="6", variable=a6)
         alpha_5_chk = Checkbutton(bit_planes_frame, text="5", variable=a5)
@@ -153,17 +163,37 @@ class MainWindow:
         red_1_chk.grid(column=7, row=2)
         red_0_chk.grid(column=8, row=2)
         green_lbl.grid(column=0, row=3)
+        green_7_chk.grid(column=1, row=3)
+        green_6_chk.grid(column=2, row=3)
+        green_5_chk.grid(column=3, row=3)
+        green_4_chk.grid(column=4, row=3)
+        green_3_chk.grid(column=5, row=3)
+        green_2_chk.grid(column=6, row=3)
+        green_1_chk.grid(column=7, row=3)
+        green_0_chk.grid(column=8, row=3)
         blue_lbl.grid(column=0, rowspan=4)
+        blue_7_chk.grid(column=1, row=4)
+        blue_6_chk.grid(column=2, row=4)
+        blue_5_chk.grid(column=3, row=4)
+        blue_4_chk.grid(column=4, row=4)
+        blue_3_chk.grid(column=5, row=4)
+        blue_2_chk.grid(column=6, row=4)
+        blue_1_chk.grid(column=7, row=4)
+        blue_0_chk.grid(column=8, row=4)
 
         # notebook tabs
         notebook.add(main_screen, text="Files")
         notebook.add(setting_screen, text="Settings")
 
         # default settings
-        alpha_7_chk.select()
+        alpha_7_chk.invoke()
+        a7.set(True)
+        print(a7.get())
         red_7_chk.select()
         green_7_chk.select()
         blue_7_chk.select()
+
+
 
 if __name__ == '__main__':
     window = Tk()
