@@ -204,9 +204,7 @@ notebook.add(main_screen, text="Files")
 notebook.add(setting_screen, text="Settings")
 
 # default settings
-alpha_7_chk.invoke()
-a7.set(True)
-print(a7.get())
+alpha_7_chk.select()
 red_7_chk.select()
 green_7_chk.select()
 blue_7_chk.select()
