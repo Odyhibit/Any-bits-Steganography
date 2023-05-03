@@ -14,17 +14,17 @@ def pick_cover():
     cover_img = Image.open(cover_str.get())
     cover_img = ImageOps.contain(cover_img, (140, 140))
     cover_img = ImageTk.PhotoImage(cover_img)
-    print(type(cover_img), cover_img.width, cover_img.height)
-    # cover_canvas.create_image(70, 70, image=cover_img)
     cover_preview.configure(image=cover_img)
     cover_preview.image = cover_img
 
 
 def pick_hidden():
     hidden_str.set(tkinter.filedialog.askopenfilename(filetypes=[]))
-    hidden_img = ImageTk.PhotoImage(Image.open(hidden_str.get()).resize((140, 140), Image.BILINEAR))
-    hidden_preview.create_image(70, 70, image=hidden_img, anchor='nw')
-    hidden_preview.configure()
+    hidden_image = Image.open(hidden_str.get())
+    hidden_image = ImageOps.contain(hidden_image, (140, 140))
+    hidden_img = ImageTk.PhotoImage(hidden_image)
+    hidden_preview.configure(image=hidden_img)
+    hidden_preview.image = hidden_img
 
 
 def pick_stego():
