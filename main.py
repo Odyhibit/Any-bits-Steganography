@@ -38,7 +38,7 @@ def print_bit_planes():
     print(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
 
 
-def perform_stego(bit_planes:[], cover, hidden_file):
+def perform_stego(bit_planes: [], cover, hidden_file):
     pass
 
 
