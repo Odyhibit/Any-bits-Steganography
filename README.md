@@ -10,3 +10,5 @@ This is the early version of the GUI.
 
 The hidden file can be any small file that will fit inside the cover image.
 
+Here is an example of a *hidden* file.
+![test2](https://user-images.githubusercontent.com/1384102/235579763-71d16a05-6c8b-43a4-ab4d-56d26e721a6e.png)
