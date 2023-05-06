@@ -1,7 +1,7 @@
 from PIL import Image
 
 
-def to_int(seven: bool, six: bool, five: bool, four: bool, three: bool, two: bool, one: bool, zero: bool) -> int:
+def to_int(seven: int, six: int, five: int, four: int, three: int, two: int, one: int, zero: int) -> int:
     # print((seven << 7), (six << 6), (five << 5), (four << 4), (three << 3), (two << 2), (one << 1), int(zero))
     return (seven << 7) + (six << 6) + (five << 5) + (four << 4) + (three << 3) + (two << 2) + (one << 1) + int(zero)
 

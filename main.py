@@ -10,12 +10,13 @@ root = Tk()
 
 def pick_cover():
     cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
-    print_bit_planes()
     cover_img = Image.open(cover_str.get())
     cover_img = ImageOps.contain(cover_img, (140, 140))
     cover_img = ImageTk.PhotoImage(cover_img)
     cover_preview.configure(image=cover_img)
     cover_preview.image = cover_img
+    print_bit_planes()
+    get_bit_planes()
 
 
 def pick_hidden():
@@ -38,9 +39,20 @@ def print_bit_planes():
     print(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
 
 
+def get_bit_planes():
+    alpha = stego.to_int(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
+    red = stego.to_int(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
+    green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
+    blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
+
+    print("Alpha is ", bin(alpha))
+    print("Red   is ", bin(red))
+    print("Green is ", bin(green))
+    print("Blue  is ", bin(blue))
+
+
 def perform_stego(bit_planes: [], cover, hidden_file):
     pass
-
 
 
 root.title("Rubbish Steganography")
