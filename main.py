@@ -42,6 +42,7 @@ def perform_stego(bit_planes: [], cover, hidden_file):
     pass
 
 
+
 root.title("Rubbish Steganography")
 # window.geometry("500x500")
 notebook = ttk.Notebook(root)
