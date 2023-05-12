@@ -16,24 +16,40 @@ def hide_bits(original: [], bit: int) -> int:
     return striped + hidden_bit
 
 
-def stego(cover_file: str, hidden_file: str):
+def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
+    zero_bit_mask = 255 - (2 ** power_of_two)
+    channel = channel & zero_bit_mask
+    if bit:
+        channel = channel + (2 ** power_of_two)
+    return channel
+
+
+def bit_pool_idea(alpha: int):
+    for i in range(8):
+        if alpha & (2**i):
+            print("1", end="")
+        else:
+            print("0", end="")
+    print()
+
+
+def stego(cover_file: str, hidden_file: str, bit_planes: []):
     with Image.open(cover_file) as img, open(hidden_file, "rb") as hidden:
         px = img.load()
-        b_message = ""
+        str_bin_to_hide = ""
         while hex_of_byte := hidden.read(1).hex():
             if hex_of_byte:
-                b_message += bin(int(hex_of_byte, 16))[2:].zfill(8)
+                str_bin_to_hide += bin(int(hex_of_byte, 16))[2:].zfill(8)
 
-        print("STEGO")
-        print(b_message[0:64])
         width, height = img.width, img.height
+
 
         for y in range(height):
             for x in range(width):
-                if len(b_message) > 0:
-                    bit_to_hide = b_message[0:1]
+                if len(str_bin_to_hide) > 0:
+                    bit_to_hide = str_bin_to_hide[0:1]
                     image_byte = px[x, y]
-                    b_message = b_message[1:]
+                    str_bin_to_hide = str_bin_to_hide[1:]
         img.save("test.png")
 
 
