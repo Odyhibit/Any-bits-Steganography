@@ -50,7 +50,8 @@ def get_bit_planes():
     print("Green is ", str(bin(green)[2:]).zfill(8))
     print("Blue  is ", bin(blue)[2:].zfill(8))
     print("Bit pool idea prints alpha LSB first")
-    print(stego.bit_pool_idea(alpha))
+    stego.bit_pool_idea(alpha)
+    print("Bits per pixel", stego.bits_per_pixel([alpha, red, green, blue]))
 
 
 def perform_stego(bit_planes: [], cover, hidden_file):
