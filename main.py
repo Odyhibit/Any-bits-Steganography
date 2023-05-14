@@ -20,7 +20,6 @@ def pick_cover():
     cover_preview.image = cover_img
 
 
-
 def pick_hidden():
     hidden_str.set(tkinter.filedialog.askopenfilename(filetypes=[]))
     hidden_image = Image.open(hidden_str.get())
@@ -57,16 +56,20 @@ def perform_stego():
     stego.stego(cover, hidden, bit_planes)
 
 
-root.title("Rubbish Steganography")
+root.title("Any bit you want Steganography")
 # window.geometry("500x500")
 notebook = ttk.Notebook(root)
 notebook.pack(expand=True)
 
-# main screen
+# stego screen
 main_screen = Frame(notebook)
 top_frame = Frame(main_screen)
 middle_frame = Frame(main_screen)
 bottom_frame = Frame(main_screen)
+
+# unstego screen
+unstego_screen = Frame(notebook)
+unstego_top_frame = Frame(unstego_screen)
 
 # setting screen
 setting_screen = Frame(notebook)
@@ -77,13 +80,15 @@ cover_str = StringVar()
 cover_str.set("Cover Image")
 hidden_str = StringVar()
 hidden_str.set("Hidden File")
-stego_str = StringVar()
 
 # setting screen variables (bit plane checkboxes)
 a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
 r7, r6, r5, r4, r3, r2, r1, r0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
 g7, g6, g5, g4, g3, g2, g1, g0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
 b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
+
+# unstego screen variables
+stego_str = StringVar()
 
 # Main screen widgets
 cover_lbl = ttk.Label(top_frame, textvariable=cover_str, wraplength=250)
@@ -98,10 +103,9 @@ hidden_preview_label = ttk.Label(middle_frame, text="Hidden File")
 hidden_preview = Label(middle_frame, bd=2, relief="ridge", image=placeholder)
 arrow_lbl = Label(middle_frame, text="<-")
 
-load_stego_btn = Button(bottom_frame, text="Load Stego", command=pick_stego)
-save_output_btn = Button(bottom_frame, text="Save Output", state="disabled")
+
 save_stego_btn = Button(bottom_frame, text="Save Stego Image", command=perform_stego)
-stego_lbl = Label(bottom_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
+
 
 # setting screen widgets
 alpha_lbl = Label(bit_planes_frame, text="Alpha")
@@ -141,6 +145,11 @@ blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
 
+# unstego screen widgets
+stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
+load_stego_btn = Button(unstego_top_frame, text="Load Stego", command=pick_stego)
+save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled")
+
 #  main screen Frame Layout
 top_frame.grid(padx=20, pady=20, sticky="E,W")
 top_frame.columnconfigure(0, minsize=250)
@@ -162,7 +171,7 @@ hidden_lbl.grid(column=0, row=1, padx=4, pady=6)
 cover_btn.grid(column=1, row=0, sticky="E,W", padx=4, pady=6)
 hidden_btn.grid(column=1, row=1, sticky="E,W", padx=4, pady=6)
 
-#  Middle Frame
+# Middle Frame
 cover_preview_label.grid(column=0, row=0)
 cover_preview.grid(column=0, row=1)
 arrow_lbl.grid(column=1, row=1)
@@ -170,22 +179,19 @@ hidden_preview_label.grid(column=2, row=0)
 hidden_preview.grid(column=2, row=1)
 
 # bottom Frame
-load_stego_btn.grid(column=0, row=0, sticky="E", padx=4, pady=6)
-save_output_btn.grid(column=1, row=0, padx=4, pady=6)
 save_stego_btn.grid(column=2, row=0, sticky="W", padx=4, pady=6)
-stego_lbl.grid(columnspan=3, row=1, sticky="E,W", padx=4, pady=6)
 
 # bit plane frame
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
-alpha_lbl.grid(column=0, row=1)
-alpha_7_chk.grid(column=1, row=1)
-alpha_6_chk.grid(column=2, row=1)
-alpha_5_chk.grid(column=3, row=1)
-alpha_4_chk.grid(column=4, row=1)
-alpha_3_chk.grid(column=5, row=1)
-alpha_2_chk.grid(column=6, row=1)
-alpha_1_chk.grid(column=7, row=1)
-alpha_0_chk.grid(column=8, row=1)
+alpha_lbl.grid(column=0, row=5)
+alpha_7_chk.grid(column=1, row=5)
+alpha_6_chk.grid(column=2, row=5)
+alpha_5_chk.grid(column=3, row=5)
+alpha_4_chk.grid(column=4, row=5)
+alpha_3_chk.grid(column=5, row=5)
+alpha_2_chk.grid(column=6, row=5)
+alpha_1_chk.grid(column=7, row=5)
+alpha_0_chk.grid(column=8, row=5)
 red_lbl.grid(column=0, row=2)
 red_7_chk.grid(column=1, row=2)
 red_6_chk.grid(column=2, row=2)
@@ -204,7 +210,7 @@ green_3_chk.grid(column=5, row=3)
 green_2_chk.grid(column=6, row=3)
 green_1_chk.grid(column=7, row=3)
 green_0_chk.grid(column=8, row=3)
-blue_lbl.grid(column=0, rowspan=4)
+blue_lbl.grid(column=0, row=4)
 blue_7_chk.grid(column=1, row=4)
 blue_6_chk.grid(column=2, row=4)
 blue_5_chk.grid(column=3, row=4)
@@ -214,12 +220,20 @@ blue_2_chk.grid(column=6, row=4)
 blue_1_chk.grid(column=7, row=4)
 blue_0_chk.grid(column=8, row=4)
 
+# unstego frame layout
+unstego_top_frame.grid(padx=20, pady=20, sticky="E,W")
+load_stego_btn.grid(column=0, row=0, sticky="E", padx=4, pady=6)
+save_output_btn.grid(column=1, row=0, padx=4, pady=6)
+stego_lbl.grid(columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
+
+
 # notebook tabs
-notebook.add(main_screen, text="Files")
+notebook.add(main_screen, text="Stego")
+notebook.add(unstego_screen, text="UnStego")
 notebook.add(setting_screen, text="Settings")
 
 # default settings
-alpha_7_chk.select()
+# alpha_7_chk.select()
 red_7_chk.select()
 green_7_chk.select()
 blue_7_chk.select()
