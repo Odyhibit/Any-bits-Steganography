@@ -1,4 +1,3 @@
-import PIL.Image
 from PIL import Image
 
 
@@ -18,11 +17,12 @@ def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
     return channel
 
 
-def image_to_bin_str(cover_image: Image) -> []:
+def image_to_list_of_tuples(cover_image: Image) -> []:
     return list(cover_image.convert("RGBA").getdata())
 
 
 def file_to_bin_str(hidden_file: str) -> []:
+    # Changes hidden file into a binary string
     bin_str_of_file = ""
     with open(hidden_file, "rb") as hidden:
         while hex_of_byte := hidden.read(1).hex():
@@ -32,6 +32,7 @@ def file_to_bin_str(hidden_file: str) -> []:
 
 
 def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
+    # process all 4 channels for 1 pixel
     for i in range(8):
         if bit_mask & (2 ** i) and bin_str:
             channel = hide_bit(i, channel, int(bin_str[0]))
@@ -48,7 +49,7 @@ def save_stego_file(pixels: [], size, filename: str):
 def stego(cover_file: str, hidden_file: str, bit_planes: []):
     cover_image = Image.open(cover_file)
     size = (cover_image.width, cover_image.height)
-    cover_pixels = image_to_bin_str(cover_image)
+    cover_pixels = image_to_list_of_tuples(cover_image)
     bin_str = file_to_bin_str(hidden_file)
     px_idx = 0
 
