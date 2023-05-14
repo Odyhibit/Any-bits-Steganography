@@ -9,14 +9,16 @@ root = Tk()
 
 
 def pick_cover():
-    cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
+    file_name = tkinter.filedialog.askopenfilename(initialdir="./", filetypes=[("image files", ".png")])
+    if not file_name:
+        return
+    cover_str.set(file_name)
     cover_img = Image.open(cover_str.get())
     cover_img = ImageOps.contain(cover_img, (140, 140))
     cover_img = ImageTk.PhotoImage(cover_img)
     cover_preview.configure(image=cover_img)
     cover_preview.image = cover_img
-    # print_bit_planes()
-    # get_bit_planes()
+
 
 
 def pick_hidden():
@@ -223,4 +225,3 @@ green_7_chk.select()
 blue_7_chk.select()
 
 root.mainloop()
-print("to int", stego.to_int(False, True, False, True, False, True, False, True))

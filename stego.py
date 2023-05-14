@@ -60,4 +60,4 @@ def stego(cover_file: str, hidden_file: str, bit_planes: []):
         cover_pixels[px_idx] = (new_px[0], new_px[1], new_px[2], new_px[3])
         px_idx += 1
 
-    save_stego_file(cover_pixels, size, "all_bit_output.png")
+    save_stego_file(cover_pixels, size, "output_files/output.png")
