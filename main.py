@@ -16,7 +16,7 @@ def pick_cover():
     cover_preview.configure(image=cover_img)
     cover_preview.image = cover_img
     # print_bit_planes()
-    get_bit_planes()
+    # get_bit_planes()
 
 
 def pick_hidden():
@@ -45,17 +45,14 @@ def get_bit_planes():
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
 
-    print("Alpha is ", bin(alpha)[2:].zfill(8))
-    print("Red   is ", bin(red)[2:].zfill(8))
-    print("Green is ", str(bin(green)[2:]).zfill(8))
-    print("Blue  is ", bin(blue)[2:].zfill(8))
-    print("Bit pool idea prints alpha LSB first")
-    stego.bit_pool_idea(alpha)
-    print("Bits per pixel", stego.bits_per_pixel([alpha, red, green, blue]))
+    return [red, green, blue, alpha]
 
 
-def perform_stego(bit_planes: [], cover, hidden_file):
-    pass
+def perform_stego():
+    cover = cover_str.get()
+    hidden = hidden_str.get()
+    bit_planes = get_bit_planes()
+    stego.stego(cover, hidden, bit_planes)
 
 
 root.title("Rubbish Steganography")
@@ -101,7 +98,7 @@ arrow_lbl = Label(middle_frame, text="<-")
 
 load_stego_btn = Button(bottom_frame, text="Load Stego", command=pick_stego)
 save_output_btn = Button(bottom_frame, text="Save Output", state="disabled")
-save_stego_btn = Button(bottom_frame, text="Save Stego Image", state="disabled")
+save_stego_btn = Button(bottom_frame, text="Save Stego Image", command=perform_stego)
 stego_lbl = Label(bottom_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
 
 # setting screen widgets

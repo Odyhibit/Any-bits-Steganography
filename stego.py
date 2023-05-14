@@ -1,3 +1,4 @@
+import PIL.Image
 from PIL import Image
 
 
@@ -6,7 +7,7 @@ def to_int(seven: int, six: int, five: int, four: int, three: int, two: int, one
 
 
 def bits_per_pixel(bit_planes: []) -> int:
-    return bit_planes[0] + bit_planes[1] + bit_planes[2] + bit_planes[3]
+    return bit_planes[0].bit_count() + bit_planes[1].bit_count() + bit_planes[2].bit_count() + bit_planes[3].bit_count()
 
 
 def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
@@ -17,17 +18,8 @@ def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
     return channel
 
 
-def bit_pool_idea(alpha: int):
-    for i in range(8):
-        if alpha & (2 ** i):
-            print("1", end="")
-        else:
-            print("0", end="")
-    print("")
-
-
-def image_to_bin_str(cover_file: str) -> []:
-    return list(Image.open(cover_file).convert("RGBA").getdata())
+def image_to_bin_str(cover_image: Image) -> []:
+    return list(cover_image.convert("RGBA").getdata())
 
 
 def file_to_bin_str(hidden_file: str) -> []:
@@ -39,7 +31,32 @@ def file_to_bin_str(hidden_file: str) -> []:
     return bin_str_of_file
 
 
-def stego(cover_file: str, hidden_file: str, bit_planes: []):
-    cover_pixels = image_to_bin_str(cover_file)
-    bin_str_to_hide = file_to_bin_str(hidden_file)
+def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
+    for i in range(8):
+        if bit_mask & (2 ** i) and bin_str:
+            channel = hide_bit(i, channel, int(bin_str[0]))
+            bin_str = bin_str[1:]
+    return channel, bin_str
 
+
+def save_stego_file(pixels: [], size, filename: str):
+    output_img = Image.new("RGBA", size)
+    output_img.putdata(pixels)
+    output_img.save(filename)
+
+
+def stego(cover_file: str, hidden_file: str, bit_planes: []):
+    cover_image = Image.open(cover_file)
+    size = (cover_image.width, cover_image.height)
+    cover_pixels = image_to_bin_str(cover_image)
+    bin_str = file_to_bin_str(hidden_file)
+    px_idx = 0
+
+    while bin_str:
+        new_px = [0, 0, 0, 0]
+        for chn in range(4):
+            new_px[chn], bin_str = hide_in_channel(cover_pixels[px_idx][chn], bit_planes[chn], bin_str)
+        cover_pixels[px_idx] = (new_px[0], new_px[1], new_px[2], new_px[3])
+        px_idx += 1
+
+    save_stego_file(cover_pixels, size, "all_bit_output.png")
