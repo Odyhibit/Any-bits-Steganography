@@ -222,7 +222,7 @@ blue_0_chk.grid(column=8, row=4)
 
 # unstego frame layout
 unstego_top_frame.grid(padx=20, pady=20, sticky="E,W")
-load_stego_btn.grid(column=0, row=0, sticky="E", padx=4, pady=6)
+load_stego_btn.grid(column=0, row=0, sticky="E,W", padx=4, pady=6)
 save_output_btn.grid(column=1, row=0, padx=4, pady=6)
 stego_lbl.grid(columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
 
