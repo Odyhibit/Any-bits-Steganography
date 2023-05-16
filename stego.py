@@ -9,14 +9,6 @@ def bits_per_pixel(bit_planes: []) -> int:
     return bit_planes[0].bit_count() + bit_planes[1].bit_count() + bit_planes[2].bit_count() + bit_planes[3].bit_count()
 
 
-def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
-    zero_bit_mask = 255 - (2 ** power_of_two)
-    channel = channel & zero_bit_mask
-    if bit:
-        channel = channel + (2 ** power_of_two)
-    return channel
-
-
 def image_to_list_of_tuples(cover_image: Image) -> []:
     return list(cover_image.convert("RGBA").getdata())
 
@@ -29,6 +21,27 @@ def file_to_bin_str(hidden_file: str) -> []:
             if hex_of_byte:
                 bin_str_of_file += bin(int(hex_of_byte, 16))[2:].zfill(8)
     return bin_str_of_file
+
+
+def unhide_bit(power_of_two: int, channel: int) -> int:
+    single_bit_mask = 2 ** power_of_two
+    return channel & single_bit_mask
+
+
+def unhide_from_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
+    for i in range(8):
+        if bit_mask & (2 ** i):
+            channel = unhide_bit(i, channel)
+            bin_str += channel
+    return bin_str
+
+
+def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
+    zero_target_bit = 255 - (2 ** power_of_two)
+    channel = channel & zero_target_bit
+    if bit:
+        channel = channel | (2 ** power_of_two)
+    return channel
 
 
 def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):

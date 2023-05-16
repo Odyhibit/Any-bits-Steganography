@@ -95,16 +95,44 @@ cover_lbl = ttk.Label(top_frame, textvariable=cover_str, wraplength=250)
 cover_btn = Button(top_frame, text="Choose Image", command=pick_cover)
 hidden_lbl = ttk.Label(top_frame, textvariable=hidden_str, wraplength=250)
 hidden_btn = Button(top_frame, text="Choose File", command=pick_hidden)
-
 cover_preview_label = ttk.Label(middle_frame, text="Cover Image")
 placeholder = ImageTk.PhotoImage(Image.open("placeholder.png"))
 cover_preview = Label(middle_frame, bd=2, relief="groove", image=placeholder)
 hidden_preview_label = ttk.Label(middle_frame, text="Hidden File")
 hidden_preview = Label(middle_frame, bd=2, relief="ridge", image=placeholder)
 arrow_lbl = Label(middle_frame, text="<-")
-
-
 save_stego_btn = Button(bottom_frame, text="Save Stego Image", command=perform_stego)
+
+#  main screen Frame Layout
+top_frame.grid(padx=20, pady=20, sticky="E,W")
+top_frame.columnconfigure(0, minsize=250)
+top_frame.columnconfigure(1, minsize=100)
+
+middle_frame.grid(padx=20, pady=20, sticky="E,W")
+middle_frame.columnconfigure(0, minsize=150)
+middle_frame.columnconfigure(1, minsize=50)
+middle_frame.columnconfigure(2, minsize=150)
+
+bottom_frame.grid(padx=20, pady=20, sticky="E,W")
+bottom_frame.columnconfigure(0, minsize=100)
+bottom_frame.columnconfigure(1, minsize=100)
+bottom_frame.columnconfigure(2, minsize=100)
+
+#  Top Frame
+cover_lbl.grid(column=0, row=0, padx=4, pady=6)
+hidden_lbl.grid(column=0, row=1, padx=4, pady=6)
+cover_btn.grid(column=1, row=0, sticky="E,W", padx=4, pady=6)
+hidden_btn.grid(column=1, row=1, sticky="E,W", padx=4, pady=6)
+
+# Middle Frame
+cover_preview_label.grid(column=0, row=0)
+cover_preview.grid(column=0, row=1)
+arrow_lbl.grid(column=1, row=1)
+hidden_preview_label.grid(column=2, row=0)
+hidden_preview.grid(column=2, row=1)
+
+# bottom Frame
+save_stego_btn.grid(column=2, row=0, sticky="W", padx=4, pady=6)
 
 
 # setting screen widgets
@@ -144,43 +172,6 @@ blue_3_chk = Checkbutton(bit_planes_frame, text="3", variable=b3)
 blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
-
-# unstego screen widgets
-stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
-load_stego_btn = Button(unstego_top_frame, text="Load Stego", command=pick_stego)
-save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled")
-
-#  main screen Frame Layout
-top_frame.grid(padx=20, pady=20, sticky="E,W")
-top_frame.columnconfigure(0, minsize=250)
-top_frame.columnconfigure(1, minsize=100)
-
-middle_frame.grid(padx=20, pady=20, sticky="E,W")
-middle_frame.columnconfigure(0, minsize=150)
-middle_frame.columnconfigure(1, minsize=50)
-middle_frame.columnconfigure(2, minsize=150)
-
-bottom_frame.grid(padx=20, pady=20, sticky="E,W")
-bottom_frame.columnconfigure(0, minsize=100)
-bottom_frame.columnconfigure(1, minsize=100)
-bottom_frame.columnconfigure(2, minsize=100)
-
-#  Top Frame
-cover_lbl.grid(column=0, row=0, padx=4, pady=6)
-hidden_lbl.grid(column=0, row=1, padx=4, pady=6)
-cover_btn.grid(column=1, row=0, sticky="E,W", padx=4, pady=6)
-hidden_btn.grid(column=1, row=1, sticky="E,W", padx=4, pady=6)
-
-# Middle Frame
-cover_preview_label.grid(column=0, row=0)
-cover_preview.grid(column=0, row=1)
-arrow_lbl.grid(column=1, row=1)
-hidden_preview_label.grid(column=2, row=0)
-hidden_preview.grid(column=2, row=1)
-
-# bottom Frame
-save_stego_btn.grid(column=2, row=0, sticky="W", padx=4, pady=6)
-
 # bit plane frame
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
 alpha_lbl.grid(column=0, row=5)
@@ -220,6 +211,10 @@ blue_2_chk.grid(column=6, row=4)
 blue_1_chk.grid(column=7, row=4)
 blue_0_chk.grid(column=8, row=4)
 
+# unstego screen widgets
+stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
+load_stego_btn = Button(unstego_top_frame, text="Load Stego", command=pick_stego)
+save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled")
 # unstego frame layout
 unstego_top_frame.grid(padx=20, pady=20, sticky="E,W")
 load_stego_btn.grid(column=0, row=0, sticky="E,W", padx=4, pady=6)
