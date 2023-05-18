@@ -1,3 +1,5 @@
+import os.path
+
 from PIL import Image
 
 
@@ -13,13 +15,37 @@ def image_to_list_of_tuples(cover_image: Image) -> []:
     return list(cover_image.convert("RGBA").getdata())
 
 
+def get_filename(path: str) -> str:
+    return os.path.basename(path)
+
+
+def build_header(hidden_file: str, file_size: int) -> []:
+    file_header = b"STEGO"
+    file_name = get_filename(hidden_file)
+    file_header += bytes(file_name, "ascii") + b'\x00'
+    file_header += file_size.to_bytes(4, byteorder='big')
+    header_bin_str = ""
+    for byte in file_header:
+        header_bin_str += hex_to_bin_str(hex(byte))
+    print(header_bin_str)
+    return header_bin_str
+
+
+def hex_to_bin_str(hex_of_byte: str) -> str:
+    return bin(int(hex_of_byte, 16))[2:].zfill(8)
+
+
 def file_to_bin_str(hidden_file: str) -> []:
     # Changes hidden file into a binary string
     bin_str_of_file = ""
     with open(hidden_file, "rb") as hidden:
+        file_size = hidden.__sizeof__()
+        bin_str_of_file = build_header(hidden_file, file_size)
         while hex_of_byte := hidden.read(1).hex():
             if hex_of_byte:
-                bin_str_of_file += bin(int(hex_of_byte, 16))[2:].zfill(8)
+                bin_str_of_file += hex_to_bin_str(hex_of_byte)
+    print(f"hiding {len(bin_str_of_file) / 8} bytes of data")
+    print(get_filename(hidden_file))
     return bin_str_of_file
 
 
@@ -47,7 +73,7 @@ def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
 def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
     # process all 4 channels for 1 pixel
     for i in range(8):
-        if bit_mask & (2 ** i) and bin_str:
+        if bit_mask & (2 ** i) and len(bin_str) > 0:
             channel = hide_bit(i, channel, int(bin_str[0]))
             bin_str = bin_str[1:]
     return channel, bin_str
