@@ -55,6 +55,10 @@ def perform_stego():
     bit_planes = get_bit_planes()
     stego.stego(cover, hidden, bit_planes)
 
+def perform_unstego():
+    pass
+
+
 
 root.title("Any bit you want Steganography")
 # window.geometry("500x500")
@@ -89,6 +93,7 @@ b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(
 
 # unstego screen variables
 stego_str = StringVar()
+file_found = StringVar()
 
 # Main screen widgets
 cover_lbl = ttk.Label(top_frame, textvariable=cover_str, wraplength=250)
@@ -212,14 +217,18 @@ blue_1_chk.grid(column=7, row=4)
 blue_0_chk.grid(column=8, row=4)
 
 # unstego screen widgets
-stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge")
+stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge", image=placeholder)
+file_found_lbl = Label(unstego_top_frame, textvariable=file_found, wraplength=250, bd=1, relief="ridge",)
 load_stego_btn = Button(unstego_top_frame, text="Load Stego", command=pick_stego)
 save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled")
+
+
 # unstego frame layout
-unstego_top_frame.grid(padx=20, pady=20, sticky="E,W")
+unstego_top_frame.grid(padx=90, pady=20, sticky="E,W")
 load_stego_btn.grid(column=0, row=0, sticky="E,W", padx=4, pady=6)
 save_output_btn.grid(column=1, row=0, padx=4, pady=6)
-stego_lbl.grid(columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
+stego_lbl.grid(column=0, columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
+file_found_lbl.grid(column=0, columnspan=2, row=2, sticky="E,W", padx=4, pady=6)
 
 
 # notebook tabs
