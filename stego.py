@@ -1,5 +1,4 @@
 import os.path
-
 from PIL import Image
 
 
@@ -46,27 +45,6 @@ def file_to_bin_str(hidden_file: str) -> []:
     print(f"hiding {len(bin_str_of_file) / 8} bytes of data")
     # print(get_filename(hidden_file))
     return bin_str_of_file
-
-
-def bin_str_to_file(bin_str: str):
-    new_file = bytearray()
-    for index in range(0, len(bin_str), 8):
-        new_file.extend(bytes(int(bin_str[index:index + 8], 2)))
-    print(new_file)
-    # *** need to parse for size, and file name then write the file.
-
-
-def unhide_bit(power_of_two: int, channel: int) -> int:
-    single_bit_mask = 2 ** power_of_two
-    return channel & single_bit_mask
-
-
-def unhide_from_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
-    for i in range(8):
-        if bit_mask & (2 ** i):
-            recovered_bits = unhide_bit(i, channel)
-            bin_str += recovered_bits
-    return bin_str
 
 
 def hide_bit(power_of_two: int, channel: int, bit: int) -> int:
