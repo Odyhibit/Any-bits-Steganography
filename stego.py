@@ -27,7 +27,7 @@ def build_header(hidden_file: str, file_size: int) -> []:
     header_bin_str = ""
     for byte in file_header:
         header_bin_str += hex_to_bin_str(hex(byte))
-    print(header_bin_str)
+    # print(header_bin_str)
     return header_bin_str
 
 
@@ -37,7 +37,6 @@ def hex_to_bin_str(hex_of_byte: str) -> str:
 
 def file_to_bin_str(hidden_file: str) -> []:
     # Changes hidden file into a binary string
-    bin_str_of_file = ""
     with open(hidden_file, "rb") as hidden:
         file_size = hidden.__sizeof__()
         bin_str_of_file = build_header(hidden_file, file_size)
@@ -45,8 +44,16 @@ def file_to_bin_str(hidden_file: str) -> []:
             if hex_of_byte:
                 bin_str_of_file += hex_to_bin_str(hex_of_byte)
     print(f"hiding {len(bin_str_of_file) / 8} bytes of data")
-    print(get_filename(hidden_file))
+    # print(get_filename(hidden_file))
     return bin_str_of_file
+
+
+def bin_str_to_file(bin_str: str):
+    new_file = bytearray()
+    for index in range(0, len(bin_str), 8):
+        new_file.extend(bytes(int(bin_str[index:index + 8], 2)))
+    print(new_file)
+    # *** need to parse for size, and file name then write the file.
 
 
 def unhide_bit(power_of_two: int, channel: int) -> int:
@@ -57,8 +64,8 @@ def unhide_bit(power_of_two: int, channel: int) -> int:
 def unhide_from_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
     for i in range(8):
         if bit_mask & (2 ** i):
-            channel = unhide_bit(i, channel)
-            bin_str += channel
+            recovered_bits = unhide_bit(i, channel)
+            bin_str += recovered_bits
     return bin_str
 
 
