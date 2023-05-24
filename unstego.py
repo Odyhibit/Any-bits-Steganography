@@ -31,6 +31,13 @@ def is_stego(first_five_bytes: str) -> bool:
         return True
     return False
 
+def bin_str_to_file(bin_str: str):
+    new_file = bytearray()
+    for index in range(0, len(bin_str), 8):
+        new_file.extend(bytes(int(bin_str[index:index + 8], 2)))
+    filename, data_start, file_size = parse_header(new_file)
+    return new_file[data_start:data_start + file_size]
+
 
 def unstego(stego_file: str, bit_planes: []):
     stego_image = Image.open(stego_file)
