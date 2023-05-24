@@ -4,7 +4,7 @@ import stego
 
 def unhide_bit(power_of_two: int, channel: int) -> int:
     single_bit_mask = 2 ** power_of_two
-    return (channel & single_bit_mask) >> power_of_two # this needs to return {0,1}
+    return (channel & single_bit_mask) >> power_of_two  # this needs to return {0,1}
 
 
 def unhide_from_pixel(pixel: (), bit_mask: int, bin_str: str) -> str:
@@ -30,6 +30,7 @@ def is_stego(first_five_bytes: str) -> bool:
     if first_five_bytes == expected:
         return True
     return False
+
 
 def bin_str_to_file(bin_str: str):
     new_file = bytearray()
