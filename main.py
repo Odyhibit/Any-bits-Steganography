@@ -47,7 +47,10 @@ def pick_stego():
     stego_img = ImageTk.PhotoImage(stego_image)
     stego_lbl.configure(image=stego_img)
     stego_lbl.image = stego_img
+    file_found.set("Looking for bits")
+    file_found_lbl.config(text="Looking for bits")
     results = unstego.unstego(stego_str.get(), get_bit_planes())
+    file_found.set(results)
     file_found_lbl.configure(text=results)
 
 
@@ -63,7 +66,6 @@ def get_bit_planes():
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
     alpha = stego.to_int(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
-
     return [red, green, blue, alpha]
 
 
@@ -76,6 +78,8 @@ def perform_unstego():
 
 root = Tk()
 root.title("Any bit you want Steganography")
+icon = PhotoImage(file='OdieFaceIcon.png')
+root.wm_iconphoto(False, icon)
 # window.geometry("500x500")
 notebook = ttk.Notebook(root)
 notebook.pack(expand=True)
@@ -112,6 +116,7 @@ b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(
 stego_str = StringVar()
 stego_str.set("File name")
 file_found = StringVar()
+file_found.set(" ")
 
 # Main screen widgets
 cover_lbl = ttk.Label(top_frame, textvariable=cover_str, wraplength=250)
@@ -246,7 +251,7 @@ save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled"
 # unstego frame layout
 unstego_top_frame.grid(padx=90, pady=20, sticky="E,W")
 load_stego_btn.grid(column=0, row=0, sticky="E,W", padx=4, pady=6)
-save_output_btn.grid(column=1, row=0, padx=4, pady=6)
+# save_output_btn.grid(column=1, row=0, padx=4, pady=6)
 stego_lbl.grid(column=0, columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
 file_found_lbl.grid(column=0, columnspan=2, row=2, sticky="E,W", padx=4, pady=6)
 
