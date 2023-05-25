@@ -64,8 +64,6 @@ def unstego(stego_file: str, bit_planes: []):
         filename = "output_files/" + filename
         with open(filename, 'wb') as output:
             output.write(bytes(potential_file))
-            print(str(filename) + "    written to disk")
             return str(filename) + "\nwritten to disk"
     else:
-        print("These settings do not produce recognizable content")
         return "These settings do not produce recognizable content"
