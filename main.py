@@ -4,12 +4,11 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageOps
 
 import stego
+import unstego
 
-root = Tk()
 
-
-def pick_cover():
-    file_name = tkinter.filedialog.askopenfilename(initialdir="./", filetypes=[("image files", ".png")])
+def pick_cover(event: Event = Event()):
+    file_name = tkinter.filedialog.askopenfilename(initialdir="./test_images", filetypes=[("image files", ".png")])
     if not file_name:
         return
     cover_str.set(file_name)
@@ -20,8 +19,8 @@ def pick_cover():
     cover_preview.image = cover_img
 
 
-def pick_hidden():
-    hidden_str.set(tkinter.filedialog.askopenfilename(filetypes=[]))
+def pick_hidden(event: Event = Event()):
+    hidden_str.set(tkinter.filedialog.askopenfilename(initialdir="./test_images", filetypes=[]))
     hidden_image = Image.open(hidden_str.get())
     hidden_image = ImageOps.contain(hidden_image, (140, 140))
     hidden_img = ImageTk.PhotoImage(hidden_image)
@@ -29,8 +28,27 @@ def pick_hidden():
     hidden_preview.image = hidden_img
 
 
+def perform_stego():
+    cover = cover_str.get()
+    hidden = hidden_str.get()
+    bit_planes = get_bit_planes()
+    output_filename = tkinter.filedialog.asksaveasfilename(initialdir="./output_files",
+                                                           filetypes=[("image files", ".png")])
+    save_stego_lbl.config(text="Hiding Bits . . .")
+    stego.stego(cover, hidden, bit_planes, output_filename)
+    output_filename_str.set(output_filename)
+
 def pick_stego():
-    cover_str.set(tkinter.filedialog.askopenfilename(filetypes=[("image files", ".png")]))
+    # choose stego file to decode
+    stego_str.set(tkinter.filedialog.askopenfilename(initialdir="./output_files",
+                                                     filetypes=[("image files", ".png .jpg .jpeg .gif .bmp")]))
+    stego_image = Image.open(stego_str.get())
+    stego_image = ImageOps.contain(stego_image, (140, 140))
+    stego_img = ImageTk.PhotoImage(stego_image)
+    stego_lbl.configure(image=stego_img)
+    stego_lbl.image = stego_img
+    results = unstego.unstego(stego_str.get(), get_bit_planes())
+    file_found_lbl.configure(text=results)
 
 
 def print_bit_planes():
@@ -41,25 +59,22 @@ def print_bit_planes():
 
 
 def get_bit_planes():
-    alpha = stego.to_int(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
     red = stego.to_int(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
+    alpha = stego.to_int(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
 
     return [red, green, blue, alpha]
 
 
-def perform_stego():
-    cover = cover_str.get()
-    hidden = hidden_str.get()
-    bit_planes = get_bit_planes()
-    stego.stego(cover, hidden, bit_planes)
+
+
 
 def perform_unstego():
     pass
 
 
-
+root = Tk()
 root.title("Any bit you want Steganography")
 # window.geometry("500x500")
 notebook = ttk.Notebook(root)
@@ -84,6 +99,8 @@ cover_str = StringVar()
 cover_str.set("Cover Image")
 hidden_str = StringVar()
 hidden_str.set("Hidden File")
+output_filename_str = StringVar()
+output_filename_str.set("File name")
 
 # setting screen variables (bit plane checkboxes)
 a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
@@ -93,6 +110,7 @@ b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(
 
 # unstego screen variables
 stego_str = StringVar()
+stego_str.set("File name")
 file_found = StringVar()
 
 # Main screen widgets
@@ -103,9 +121,12 @@ hidden_btn = Button(top_frame, text="Choose File", command=pick_hidden)
 cover_preview_label = ttk.Label(middle_frame, text="Cover Image")
 placeholder = ImageTk.PhotoImage(Image.open("placeholder.png"))
 cover_preview = Label(middle_frame, bd=2, relief="groove", image=placeholder)
+cover_preview.bind("<Button-1>", pick_cover)
 hidden_preview_label = ttk.Label(middle_frame, text="Hidden File")
 hidden_preview = Label(middle_frame, bd=2, relief="ridge", image=placeholder)
+hidden_preview.bind("<Button-1>", pick_hidden)
 arrow_lbl = Label(middle_frame, text="<-")
+save_stego_lbl = ttk.Label(bottom_frame, textvariable=output_filename_str, wraplength=250)
 save_stego_btn = Button(bottom_frame, text="Save Stego Image", command=perform_stego)
 
 #  main screen Frame Layout
@@ -119,9 +140,8 @@ middle_frame.columnconfigure(1, minsize=50)
 middle_frame.columnconfigure(2, minsize=150)
 
 bottom_frame.grid(padx=20, pady=20, sticky="E,W")
-bottom_frame.columnconfigure(0, minsize=100)
+bottom_frame.columnconfigure(0, minsize=250)
 bottom_frame.columnconfigure(1, minsize=100)
-bottom_frame.columnconfigure(2, minsize=100)
 
 #  Top Frame
 cover_lbl.grid(column=0, row=0, padx=4, pady=6)
@@ -137,8 +157,8 @@ hidden_preview_label.grid(column=2, row=0)
 hidden_preview.grid(column=2, row=1)
 
 # bottom Frame
-save_stego_btn.grid(column=2, row=0, sticky="W", padx=4, pady=6)
-
+save_stego_lbl.grid(column=0, row=0, padx=4, pady=6)
+save_stego_btn.grid(column=1, row=0, sticky="W", padx=4, pady=6)
 
 # setting screen widgets
 alpha_lbl = Label(bit_planes_frame, text="Alpha")
@@ -177,6 +197,7 @@ blue_3_chk = Checkbutton(bit_planes_frame, text="3", variable=b3)
 blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
+
 # bit plane frame
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
 alpha_lbl.grid(column=0, row=5)
@@ -218,10 +239,9 @@ blue_0_chk.grid(column=8, row=4)
 
 # unstego screen widgets
 stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge", image=placeholder)
-file_found_lbl = Label(unstego_top_frame, textvariable=file_found, wraplength=250, bd=1, relief="ridge",)
+file_found_lbl = Label(unstego_top_frame, textvariable=file_found, wraplength=250, bd=1, relief="ridge", )
 load_stego_btn = Button(unstego_top_frame, text="Load Stego", command=pick_stego)
 save_output_btn = Button(unstego_top_frame, text="Save Output", state="disabled")
-
 
 # unstego frame layout
 unstego_top_frame.grid(padx=90, pady=20, sticky="E,W")
@@ -229,7 +249,6 @@ load_stego_btn.grid(column=0, row=0, sticky="E,W", padx=4, pady=6)
 save_output_btn.grid(column=1, row=0, padx=4, pady=6)
 stego_lbl.grid(column=0, columnspan=2, row=1, sticky="E,W", padx=4, pady=6)
 file_found_lbl.grid(column=0, columnspan=2, row=2, sticky="E,W", padx=4, pady=6)
-
 
 # notebook tabs
 notebook.add(main_screen, text="Stego")

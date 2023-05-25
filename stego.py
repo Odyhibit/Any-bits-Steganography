@@ -64,13 +64,14 @@ def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
     return channel, bin_str
 
 
-def save_stego_file(pixels: [], size, filename: str):
+def save_stego_file(pixels: [], size, filename):
     output_img = Image.new("RGBA", size)
     output_img.putdata(pixels)
-    output_img.save(filename)
+    with open(filename, "wb") as file_out:
+        output_img.save(file_out)
 
 
-def stego(cover_file: str, hidden_file: str, bit_planes: []):
+def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename):
     cover_image = Image.open(cover_file)
     size = (cover_image.width, cover_image.height)
     cover_pixels = image_to_list_of_tuples(cover_image)
@@ -83,5 +84,5 @@ def stego(cover_file: str, hidden_file: str, bit_planes: []):
             new_px[chn], bin_str = hide_in_channel(cover_pixels[px_idx][chn], bit_planes[chn], bin_str)
         cover_pixels[px_idx] = (new_px[0], new_px[1], new_px[2], new_px[3])
         px_idx += 1
-
-    save_stego_file(cover_pixels, size, "output_files/output.png")
+    save_stego_file(cover_pixels, size, output_filename)
+    Image.open(output_filename, "r").show()

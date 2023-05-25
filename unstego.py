@@ -2,18 +2,24 @@ from PIL import Image
 import stego
 
 
-def unhide_bit(power_of_two: int, channel: int) -> int:
+def unhide_bit(power_of_two: int, channel: int) -> str:
     single_bit_mask = 2 ** power_of_two
-    return (channel & single_bit_mask) >> power_of_two  # this needs to return {0,1}
+    # print(f" mask={single_bit_mask} power={2 ** power_of_two} channel & single_bit_mask={channel & single_bit_mask}, bool={(channel & single_bit_mask) >0}")
+    if (channel & single_bit_mask) > 0:
+        return "1"
+    else:
+        return "0"
+    # return (channel & single_bit_mask) >> power_of_two  # this needs to return {0,1}
 
 
-def unhide_from_pixel(pixel: (), bit_mask: int, bin_str: str) -> str:
+def unhide_from_pixel(pixel: (), bit_mask: [], bin_str: str) -> str:
     for chn in range(4):
         this_chn = pixel[chn]
         for i in range(8):
-            if bit_mask & (2 ** i):
+            #print(bit_mask, (int(2) ** i))
+            if bit_mask[chn] & (int(2) ** i):
                 recovered_bits = unhide_bit(i, this_chn)
-                bin_str += recovered_bits
+                bin_str += str(recovered_bits)
     return bin_str
 
 
@@ -40,19 +46,26 @@ def bin_str_to_file(bin_str: str):
     return new_file[data_start:data_start + file_size]
 
 
+
+def is_known_stego():
+    pass
+
+
 def unstego(stego_file: str, bit_planes: []):
     stego_image = Image.open(stego_file)
     cover_pixels = stego.image_to_list_of_tuples(stego_image)
     hidden_bin_str = ""
     for pixel in cover_pixels:
         hidden_bin_str += unhide_from_pixel(pixel, bit_planes, hidden_bin_str)
+        print(".", end="")
     if is_stego(hidden_bin_str[:5 * 8]):
         potential_file = bin_str_to_file(hidden_bin_str)
         filename, data_index, file_size = parse_header(potential_file)
         with open(filename, 'wb') as output:
             output.write(potential_file[data_index: data_index + file_size])
+            return str(filename) + "written to disk"
     else:
-        print("These settings do not produce recognizable content")
+        return "These settings do not produce recognizable content"
 
 
 '''
