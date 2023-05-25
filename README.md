@@ -19,3 +19,5 @@ The filename will be hidden as well, and used during file recovery.
 
 
 The file can be recovered only if the settings match the ones used to hide the file.
+
+More features are planned.
