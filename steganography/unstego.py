@@ -1,5 +1,5 @@
 from PIL import Image
-import stego
+from steganography import stego
 
 
 def unhide_bit(power_of_two: int, channel: int) -> str:

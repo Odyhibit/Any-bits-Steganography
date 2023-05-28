@@ -3,8 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk, ImageOps
 
-import stego
-import unstego
+from steganography import stego, unstego
 
 
 def pick_cover(event: Event = Event()):
@@ -38,6 +37,7 @@ def perform_stego():
     stego.stego(cover, hidden, bit_planes, output_filename)
     output_filename_str.set(output_filename)
 
+
 def pick_stego():
     # choose stego file to decode
     stego_str.set(tkinter.filedialog.askopenfilename(initialdir="./output_files",
@@ -69,9 +69,6 @@ def get_bit_planes():
     return [red, green, blue, alpha]
 
 
-
-
-
 def perform_unstego():
     pass
 
@@ -100,10 +97,11 @@ bit_planes_frame = Frame(setting_screen)
 
 # main screen variables
 cover_str = StringVar()
-cover_str.set("Cover Image")
 hidden_str = StringVar()
-hidden_str.set("Hidden File")
 output_filename_str = StringVar()
+
+cover_str.set("Cover Image")
+hidden_str.set("Hidden File")
 output_filename_str.set("File name")
 
 # setting screen variables (bit plane checkboxes)
@@ -148,20 +146,20 @@ bottom_frame.grid(padx=20, pady=20, sticky="E,W")
 bottom_frame.columnconfigure(0, minsize=250)
 bottom_frame.columnconfigure(1, minsize=100)
 
-#  Top Frame
+# main tab Top Frame
 cover_lbl.grid(column=0, row=0, padx=4, pady=6)
 hidden_lbl.grid(column=0, row=1, padx=4, pady=6)
 cover_btn.grid(column=1, row=0, sticky="E,W", padx=4, pady=6)
 hidden_btn.grid(column=1, row=1, sticky="E,W", padx=4, pady=6)
 
-# Middle Frame
+# main tab Middle Frame
 cover_preview_label.grid(column=0, row=0)
 cover_preview.grid(column=0, row=1)
 arrow_lbl.grid(column=1, row=1)
 hidden_preview_label.grid(column=2, row=0)
 hidden_preview.grid(column=2, row=1)
 
-# bottom Frame
+# main tab bottom Frame
 save_stego_lbl.grid(column=0, row=0, padx=4, pady=6)
 save_stego_btn.grid(column=1, row=0, sticky="W", padx=4, pady=6)
 
@@ -203,7 +201,7 @@ blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
 
-# bit plane frame
+# hte bit plane frame
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
 alpha_lbl.grid(column=0, row=5)
 alpha_7_chk.grid(column=1, row=5)
