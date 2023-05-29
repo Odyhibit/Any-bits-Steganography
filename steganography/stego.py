@@ -18,10 +18,7 @@ def build_header(hidden_file: str, file_size: int) -> []:
     file_header = b"STEGO"
     file_name = os.path.basename(hidden_file)
     file_header += bytes(file_name, "ascii") + b'\x00'
-    print("file size", file_size)
     file_header += bytes(file_size.to_bytes(4, byteorder='little'))
-    print("size", file_size)
-    print("HEADER", file_size.to_bytes(4, byteorder='little'))
     header_bin_str = ""
     for byte in file_header:
         header_bin_str += hex_to_bin_str(hex(byte))
@@ -40,7 +37,6 @@ def file_to_bin_str(hidden_file: str) -> []:
         while hex_of_byte := hidden.read(1).hex():
             if hex_of_byte:
                 bin_str_of_file += hex_to_bin_str(hex_of_byte)
-    print(f"hiding {len(bin_str_of_file) / 8} bytes of data")
     return bin_str_of_file
 
 

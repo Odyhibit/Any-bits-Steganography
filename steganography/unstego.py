@@ -10,7 +10,6 @@ def unhide_bit(power_of_two: int, channel: int) -> str:
         return "0"
 
 
-
 def unhide_from_pixel(pixel: (), bit_mask: [], bin_str: str) -> str:
     for chn in range(4):
         this_chn = pixel[chn]
@@ -51,7 +50,6 @@ def unstego(stego_file: str, bit_planes: []):
     for pixel in cover_pixels:
         hidden_bin_str = unhide_from_pixel(pixel, bit_planes, hidden_bin_str)
     if is_stego(hidden_bin_str[:5 * 8]):
-        print("string binary", hidden_bin_str[0:64])
         filename, potential_file = bin_str_to_file(hidden_bin_str)
         filename = "output_files/" + filename
         with open(filename, 'wb') as output:
