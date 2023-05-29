@@ -54,23 +54,12 @@ def pick_stego():
     file_found_lbl.configure(text=results)
 
 
-def print_bit_planes():
-    print(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
-    print(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
-    print(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
-    print(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
-
-
 def get_bit_planes():
     red = stego.to_int(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
     alpha = stego.to_int(a7.get(), a6.get(), a5.get(), a4.get(), a3.get(), a2.get(), a1.get(), a0.get())
     return [red, green, blue, alpha]
-
-
-def perform_unstego():
-    pass
 
 
 root = Tk()

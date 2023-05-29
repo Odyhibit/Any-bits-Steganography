@@ -22,13 +22,9 @@ def unhide_from_pixel(pixel: (), bit_mask: [], bin_str: str) -> str:
 
 
 def parse_header(bin_file: []) -> (str, int, int):
-    print(bin_file[:64])
-    print(f"bin_file is {type(bin_file)}")
     end_filename = bin_file.index(0)
     filename = bin_file[5:end_filename]
-    print("filename is", str(filename)[2:-1])
     file_size = int.from_bytes(bin_file[end_filename + 1: end_filename + 5], "little")
-    print("Filesize", bin_file[end_filename + 1: end_filename + 5], file_size)
     data_index = end_filename + 5
     return str(filename)[2:-1], data_index, file_size
 
@@ -46,10 +42,6 @@ def bin_str_to_file(bin_str: str):
         new_file.append(int(bin_str[index:index + 8], 2))
     filename, data_start, file_size = parse_header(bytes(new_file))
     return filename, new_file[data_start:data_start + file_size]
-
-
-def is_known_stego():
-    pass
 
 
 def unstego(stego_file: str, bit_planes: []):
