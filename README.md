@@ -1,5 +1,5 @@
 # Any bits you want
-So if you have a need to hide some stuff in an image, and you want to hide it specific bits in specific color channels.
+So if you have a need to hide some stuff in an image, and you want to hide it in specific bits in specific color channels.
 
 
 
@@ -7,7 +7,7 @@ So if you have a need to hide some stuff in an image, and you want to hide it sp
 
 
 The stego tab allows you to pick a cover image, and a hidden file.
-The cover image will be changed to a .PNG file with 4 channels.
+The cover image will be changed to a .PNG file with 4 channels. If the file to hide is not an image the preview will remain blank.
 
 ![stego_settings](https://github.com/Odyhibit/Any-bits-you-want-Steganography/assets/1384102/a0a5fee2-e51a-4ade-87d0-49ae74f54c49)
 
