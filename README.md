@@ -12,12 +12,12 @@ The cover image will be changed to a .PNG file with 4 channels.
 ![stego_settings](https://github.com/Odyhibit/Any-bits-you-want-Steganography/assets/1384102/a0a5fee2-e51a-4ade-87d0-49ae74f54c49)
 
 
-You can pick which bits you want to hide the hidden file in.
-The filename will be hidden as well, and used during file recovery.
+The settings tab is important, you can pick which bits you want to hide the hidden file in.
+The filename will be stored as well, and used during file recovery.
 
 ![unstego](https://github.com/Odyhibit/Any-bits-you-want-Steganography/assets/1384102/1b643b0e-bdb3-44d8-91e3-7e86a885ed6d)
 
 
-The file can be recovered only if the settings match the ones used to hide the file.
+The unstego tab will recover a hidden file, and put it in the output folder. The file can be recovered only if the settings match the ones used to hide the file.
 
-More features are planned.
+
