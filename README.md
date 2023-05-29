@@ -1,4 +1,18 @@
 # Any bits you want
+Installation
+Requires Python 
+you will also need the Pillow library
+    pip install --upgrade Pillow
+download the files, or clone this repository
+    git clone https://github.com/Odyhibit/Any-bits-Steganography
+then run main.py 
+    cd Any-bits-Steganography
+    Python main.py
+ 
+ For Windows a binary version that requires no installation, or setup is available under releases. Just unzip, and run the executable.
+
+
+
 So if you have a need to hide some stuff in an image, and you want to hide it in specific bits in specific color channels.
 
 
