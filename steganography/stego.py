@@ -10,8 +10,12 @@ def bits_per_pixel(bit_planes: []) -> int:
     return bit_planes[0].bit_count() + bit_planes[1].bit_count() + bit_planes[2].bit_count() + bit_planes[3].bit_count()
 
 
-def image_to_list_of_tuples(cover_image: Image) -> []:
-    return list(cover_image.convert("RGBA").getdata())
+def image_to_list_of_tuples(cover_image: Image, with_alpha: int) -> []:
+    #print("The channels in the cover image are: ", cover_image.getbands())
+    if with_alpha or 'A' in cover_image.getbands():
+        return list(cover_image.convert("RGBA").getdata())
+    else:
+        return list(cover_image.convert("RGB").getdata())
 
 
 def build_header(hidden_file: str, file_size: int) -> []:
@@ -56,8 +60,11 @@ def hide_in_channel(channel: int, bit_mask: int, bin_str: str) -> (int, str):
     return channel, bin_str
 
 
-def save_stego_file(pixels: [], size, filename):
-    output_img = Image.new("RGBA", size)
+def save_stego_file(pixels: [], size: (), filename: str, bit_planes: []):
+    if bit_planes[3]:
+        output_img = Image.new("RGBA", size)
+    else:
+        output_img = Image.new("RGB", size)
     output_img.putdata(pixels)
     with open(filename, "wb") as file_out:
         output_img.save(file_out)
@@ -66,14 +73,18 @@ def save_stego_file(pixels: [], size, filename):
 def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename):
     cover_image = Image.open(cover_file)
     size = (cover_image.width, cover_image.height)
-    cover_pixels = image_to_list_of_tuples(cover_image)
+    with_alpha = bit_planes[3]
+    cover_pixels = image_to_list_of_tuples(cover_image, with_alpha)
     bin_str = file_to_bin_str(hidden_file)
     px_idx = 0
+    num_channels = 3
+    if with_alpha:
+        num_channels = 4
     while bin_str:
         new_px = [0, 0, 0, 0]
-        for chn in range(4):
+        for chn in range(num_channels):
             new_px[chn], bin_str = hide_in_channel(cover_pixels[px_idx][chn], bit_planes[chn], bin_str)
         cover_pixels[px_idx] = (new_px[0], new_px[1], new_px[2], new_px[3])
         px_idx += 1
-    save_stego_file(cover_pixels, size, output_filename)
+    save_stego_file(cover_pixels, size, output_filename, bit_planes)
     Image.open(output_filename, "r").show()

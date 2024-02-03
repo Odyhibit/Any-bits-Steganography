@@ -190,7 +190,7 @@ blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
 
-# hte bit plane frame
+# bit plane frame widgets
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
 alpha_lbl.grid(column=0, row=5)
 alpha_7_chk.grid(column=1, row=5)
