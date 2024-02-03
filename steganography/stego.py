@@ -11,7 +11,6 @@ def bits_per_pixel(bit_planes: []) -> int:
 
 
 def image_to_list_of_tuples(cover_image: Image, with_alpha: int) -> []:
-    #print("The channels in the cover image are: ", cover_image.getbands())
     if with_alpha or 'A' in cover_image.getbands():
         return list(cover_image.convert("RGBA").getdata())
     else:

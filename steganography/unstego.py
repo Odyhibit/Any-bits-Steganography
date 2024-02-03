@@ -11,7 +11,8 @@ def unhide_bit(power_of_two: int, channel: int) -> str:
 
 
 def unhide_from_pixel(pixel: (), bit_mask: [], bin_str: str) -> str:
-    for chn in range(4):
+    channels = 3 + bool(bit_mask[3])
+    for chn in range(channels):
         this_chn = pixel[chn]
         for i in range(8):
             if bit_mask[chn] & (int(2) ** i):
@@ -45,7 +46,8 @@ def bin_str_to_file(bin_str: str):
 
 def unstego(stego_file: str, bit_planes: []):
     stego_image = Image.open(stego_file)
-    cover_pixels = stego.image_to_list_of_tuples(stego_image)
+    with_alpha = bit_planes[3]
+    cover_pixels = stego.image_to_list_of_tuples(stego_image, with_alpha)
     hidden_bin_str = ""
     for pixel in cover_pixels:
         hidden_bin_str = unhide_from_pixel(pixel, bit_planes, hidden_bin_str)

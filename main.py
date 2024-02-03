@@ -249,8 +249,8 @@ notebook.add(setting_screen, text="Settings")
 
 # default settings
 # alpha_7_chk.select()
-red_7_chk.select()
-green_7_chk.select()
-blue_7_chk.select()
+red_0_chk.select()
+green_0_chk.select()
+blue_0_chk.select()
 
 root.mainloop()
