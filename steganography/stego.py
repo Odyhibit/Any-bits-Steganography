@@ -20,7 +20,7 @@ def image_to_list_of_tuples(cover_image: Image, with_alpha: int) -> []:
 def build_header(hidden_file: str, file_size: int) -> []:
     file_header = b"STEGO"
     file_name = os.path.basename(hidden_file)
-    file_header += bytes(file_name, "ascii") + b'\x00'
+    file_header += bytes(file_name, "ascii_text") + b'\x00'
     file_header += bytes(file_size.to_bytes(4, byteorder='little'))
     header_bin_str = ""
     for byte in file_header:
