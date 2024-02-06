@@ -20,7 +20,7 @@ def image_to_list_of_tuples(cover_image: Image, with_alpha: int) -> []:
 def build_header(hidden_file: str, file_size: int) -> []:
     file_header = b"STEGO"
     file_name = os.path.basename(hidden_file)
-    file_header += bytes(file_name, "ascii_text") + b'\x00'
+    file_header += bytes(file_name, "ascii") + b'\x00'
     file_header += bytes(file_size.to_bytes(4, byteorder='little'))
     header_bin_str = ""
     for byte in file_header:
@@ -69,13 +69,13 @@ def save_stego_file(pixels: [], size: (), filename: str, bit_planes: []):
         output_img.save(file_out)
 
 
-def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename):
+def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename: str, offset: int = 0):
     cover_image = Image.open(cover_file)
     size = (cover_image.width, cover_image.height)
     with_alpha = bit_planes[3]
     cover_pixels = image_to_list_of_tuples(cover_image, with_alpha)
     bin_str = file_to_bin_str(hidden_file)
-    px_idx = 0
+    px_idx = offset
     num_channels = 3
     if with_alpha:
         num_channels = 4

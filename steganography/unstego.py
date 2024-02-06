@@ -44,12 +44,12 @@ def bin_str_to_file(bin_str: str):
     return filename, new_file[data_start:data_start + file_size]
 
 
-def unstego(stego_file: str, bit_planes: []):
+def unstego(stego_file: str, bit_planes: [], offset: int = 0) -> str:
     stego_image = Image.open(stego_file)
     with_alpha = bit_planes[3]
     cover_pixels = stego.image_to_list_of_tuples(stego_image, with_alpha)
     hidden_bin_str = ""
-    for pixel in cover_pixels:
+    for pixel in cover_pixels[offset:]:
         hidden_bin_str = unhide_from_pixel(pixel, bit_planes, hidden_bin_str)
     if is_stego(hidden_bin_str[:5 * 8]):
         filename, potential_file = bin_str_to_file(hidden_bin_str)

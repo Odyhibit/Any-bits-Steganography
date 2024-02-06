@@ -31,11 +31,22 @@ def perform_stego():
     cover = cover_str.get()
     hidden = hidden_str.get()
     bit_planes = get_bit_planes()
+    offset = get_offset()
     output_filename = tkinter.filedialog.asksaveasfilename(initialdir="./output_files",
                                                            filetypes=[("image files", ".png")])
     save_stego_lbl.config(text="Hiding Bits . . .")
-    stego.stego(cover, hidden, bit_planes, output_filename)
+    if output_filename.lower()[-3:] != "png":
+        output_filename += ".png"
+    stego.stego(cover, hidden, bit_planes, output_filename, offset)
     output_filename_str.set(output_filename)
+
+
+def get_offset() -> int:
+    """ The 1.0 means start at line 1 character 0.
+        The end-1c means remove the newline from the end."""
+    offset = offset_input.get("1.0", 'end-1c')
+    return int(offset)
+
 
 
 def pick_stego():
@@ -49,12 +60,14 @@ def pick_stego():
     stego_lbl.image = stego_img
     file_found.set("Looking for bits")
     file_found_lbl.config(text="Looking for bits")
-    results = unstego.unstego(stego_str.get(), get_bit_planes())
+    print(f"The offset should be {get_offset()}")
+    results = unstego.unstego(stego_str.get(), get_bit_planes(), get_offset())
+
     file_found.set(results)
     file_found_lbl.configure(text=results)
 
 
-def get_bit_planes():
+def get_bit_planes() -> []:
     red = stego.to_int(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
@@ -83,6 +96,7 @@ unstego_top_frame = Frame(unstego_screen)
 # setting screen
 setting_screen = Frame(notebook)
 bit_planes_frame = Frame(setting_screen)
+other_settings_frame = Frame(setting_screen)
 
 # main screen variables
 cover_str = StringVar()
@@ -189,18 +203,11 @@ blue_3_chk = Checkbutton(bit_planes_frame, text="3", variable=b3)
 blue_2_chk = Checkbutton(bit_planes_frame, text="2", variable=b2)
 blue_1_chk = Checkbutton(bit_planes_frame, text="1", variable=b1)
 blue_0_chk = Checkbutton(bit_planes_frame, text="0", variable=b0)
+offset_lbl = Label(other_settings_frame, text="Offset")
+offset_input = Text(other_settings_frame, height=1, width=10)
 
 # bit plane frame widgets
 bit_planes_frame.grid(padx=20, pady=20, sticky="E,W")
-alpha_lbl.grid(column=0, row=5)
-alpha_7_chk.grid(column=1, row=5)
-alpha_6_chk.grid(column=2, row=5)
-alpha_5_chk.grid(column=3, row=5)
-alpha_4_chk.grid(column=4, row=5)
-alpha_3_chk.grid(column=5, row=5)
-alpha_2_chk.grid(column=6, row=5)
-alpha_1_chk.grid(column=7, row=5)
-alpha_0_chk.grid(column=8, row=5)
 red_lbl.grid(column=0, row=2)
 red_7_chk.grid(column=1, row=2)
 red_6_chk.grid(column=2, row=2)
@@ -228,6 +235,18 @@ blue_3_chk.grid(column=5, row=4)
 blue_2_chk.grid(column=6, row=4)
 blue_1_chk.grid(column=7, row=4)
 blue_0_chk.grid(column=8, row=4)
+alpha_lbl.grid(column=0, row=5)
+alpha_7_chk.grid(column=1, row=5)
+alpha_6_chk.grid(column=2, row=5)
+alpha_5_chk.grid(column=3, row=5)
+alpha_4_chk.grid(column=4, row=5)
+alpha_3_chk.grid(column=5, row=5)
+alpha_2_chk.grid(column=6, row=5)
+alpha_1_chk.grid(column=7, row=5)
+alpha_0_chk.grid(column=8, row=5)
+other_settings_frame.grid(padx=20, pady=20, sticky="E,W")
+offset_lbl.grid(column=0, row=0)
+offset_input.grid(column=1, row=0)
 
 # unstego screen widgets
 stego_lbl = Label(unstego_top_frame, textvariable=stego_str, wraplength=250, bd=1, relief="ridge", image=placeholder)
