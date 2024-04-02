@@ -45,6 +45,8 @@ def get_offset() -> int:
     """ The 1.0 means start at line 1 character 0.
         The end-1c means remove the newline from the end."""
     offset = offset_input.get("1.0", 'end-1c')
+    if offset == "":
+        offset = "0"
     return int(offset)
 
 
