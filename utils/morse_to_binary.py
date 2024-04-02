@@ -1,6 +1,7 @@
+
 ascii_to_morse_dict = {
     "A": ".-",
-    "": "-...",
+    "B": "-...",
     "C": "-.-.",
     "D": "-..",
     "E": ".",
@@ -51,6 +52,7 @@ ascii_to_morse_dict = {
 }
 
 morse_to_binary_string_dict = {".": "10", "-": "1110", "_": "1110", " ": "00", "/": "0000"}
+
 
 def text_to_morse(ascii_text: str) -> str:
     """Letters separated by a space, words separated by '/'."""
