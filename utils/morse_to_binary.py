@@ -124,7 +124,7 @@ def text_to_binary_morse(text: str) -> []:
 
 
 if __name__ == "__main__":
-    test_string = "This is a test string."
+    test_string = "WGU NCL 2024"
     print(text_to_morse(test_string))
     print(morse_to_text(text_to_morse(test_string)))
     write_file("morse_bin_output", text_to_binary_morse(test_string))

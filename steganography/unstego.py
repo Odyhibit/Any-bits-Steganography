@@ -11,10 +11,12 @@ def unhide_bit(power_of_two: int, channel: int) -> str:
 
 
 def unhide_from_pixel(pixel: (), bit_mask: [], bin_str: str) -> str:
+    msb_first = (7, -1, -1)
+    lsb_first = 8
     channels = 3 + bool(bit_mask[3])
     for chn in range(channels):
         this_chn = pixel[chn]
-        for i in range(8):
+        for i in range(*msb_first):
             if bit_mask[chn] & (int(2) ** i):
                 recovered_bits = unhide_bit(i, this_chn)
                 bin_str += str(recovered_bits)

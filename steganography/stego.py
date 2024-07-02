@@ -1,5 +1,6 @@
 import os.path
 from PIL import Image
+import numpy as np
 
 
 def to_int(seven: int, six: int, five: int, four: int, three: int, two: int, one: int, zero: int) -> int:
@@ -12,9 +13,11 @@ def bits_per_pixel(bit_planes: []) -> int:
 
 def image_to_list_of_tuples(cover_image: Image, with_alpha: int) -> []:
     if with_alpha or 'A' in cover_image.getbands():
-        return list(cover_image.convert("RGBA").getdata())
+        image = cover_image.convert("RGBA").getdata()
+        return list(image)
     else:
-        return list(cover_image.convert("RGB").getdata())
+        image = cover_image.convert("RGB").getdata()
+        return list(image)
 
 
 def build_header(hidden_file: str, file_size: int) -> []:
@@ -64,6 +67,8 @@ def save_stego_file(pixels: [], size: (), filename: str, bit_planes: []):
         output_img = Image.new("RGBA", size)
     else:
         output_img = Image.new("RGB", size)
+
+    #print(pixels.shape, pixels.dtype)
     output_img.putdata(pixels)
     with open(filename, "wb") as file_out:
         output_img.save(file_out)

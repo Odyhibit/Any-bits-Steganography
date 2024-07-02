@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk, ImageOps
 
-from steganography import stego, unstego
+from steganography import stego, unstego, np_idea
 
 
 def pick_cover(event: Event = Event()):
@@ -37,7 +37,7 @@ def perform_stego():
     save_stego_lbl.config(text="Hiding Bits . . .")
     if output_filename.lower()[-3:] != "png":
         output_filename += ".png"
-    stego.stego(cover, hidden, bit_planes, output_filename, offset)
+    np_idea.stego(cover, hidden, bit_planes, output_filename, offset)
     output_filename_str.set(output_filename)
 
 
@@ -48,7 +48,6 @@ def get_offset() -> int:
     if offset == "":
         offset = "0"
     return int(offset)
-
 
 
 def pick_stego():
@@ -70,6 +69,9 @@ def pick_stego():
 
 
 def get_bit_planes() -> []:
+    """Use the checkboxes to create a list of 4 ints.
+        (1,1,1,0) would be LSB with no alpha.
+    """
     red = stego.to_int(r7.get(), r6.get(), r5.get(), r4.get(), r3.get(), r2.get(), r1.get(), r0.get())
     green = stego.to_int(g7.get(), g6.get(), g5.get(), g4.get(), g3.get(), g2.get(), g1.get(), g0.get())
     blue = stego.to_int(b7.get(), b6.get(), b5.get(), b4.get(), b3.get(), b2.get(), b1.get(), b0.get())
@@ -110,10 +112,10 @@ hidden_str.set("Hidden File")
 output_filename_str.set("File name")
 
 # setting screen variables (bit plane checkboxes)
-a7, a6, a5, a4, a3, a2, a1, a0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
-r7, r6, r5, r4, r3, r2, r1, r0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
-g7, g6, g5, g4, g3, g2, g1, g0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
-b7, b6, b5, b4, b3, b2, b1, b0 = IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar(), IntVar()
+a7, a6, a5, a4, a3, a2, a1, a0 = [IntVar() for _ in range(8)]
+r7, r6, r5, r4, r3, r2, r1, r0 = [IntVar() for _ in range(8)]
+g7, g6, g5, g4, g3, g2, g1, g0 = [IntVar() for _ in range(8)]
+b7, b6, b5, b4, b3, b2, b1, b0 = [IntVar() for _ in range(8)]
 
 # unstego screen variables
 stego_str = StringVar()
@@ -269,7 +271,6 @@ notebook.add(unstego_screen, text="UnStego")
 notebook.add(setting_screen, text="Settings")
 
 # default settings
-# alpha_7_chk.select()
 red_0_chk.select()
 green_0_chk.select()
 blue_0_chk.select()
