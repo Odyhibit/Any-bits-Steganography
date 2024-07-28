@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import math
 import sys
 
 import click
@@ -9,34 +10,91 @@ from PIL import Image
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
-@click.option('-c', '--cover', help='Filename of cover image.')
-@click.option('-s', '--stego', help='Filename of stego image.')
+@click.option('-c', '--cover', type=click.Path(exists=True), help='Filename of cover image.')
+@click.option('-s', '--stego', type=click.Path(exists=True), help='Filename of stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block')
-@click.option('--embed/--extract', '-e/-x', default=True, show_default=True)
-def main(text, cover, stego, bits, embed):
-    print(text, cover, stego, bits, embed)
+@click.option('--embed/--extract', '-e/-x', default=True, show_default=True, help="embed a message/or extract a message")
+# @click.option('-i', '--info', type=bool, default=False)
+@click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
+def main(text, cover, stego, bits, embed, diff):
+    # print(text, cover, stego, bits, embed)
     if embed and cover and text and stego:
         print(f"Embedding text into {stego}.")
         stego_image(cover, text, stego, bits)
-        print(f"done.")
     if not embed and stego != "" and bits > 0:
         print("decoding the stego image.")
+        print()
         results = unstego_image(stego, bits)
-        print(f"Decoded image:{results}")
+        print(results)
+        print()
+    if diff and cover and stego:
+        print(compare_pixels(cover, stego))
+
     if not stego:
         print("nothing to do")
+
+
+def compare_pixels(cover, stego):
+    #  open images
+    image_1 = Image.open(cover)
+    image_2 = Image.open(stego)
+    count = 0
+
+    # Convert the images to a NumPy arrays
+    image_array_1 = np.array(image_1.getdata())
+    image_array_2 = np.array(image_2.getdata())
+    if image_array_1.shape == image_array_2.shape:
+        pixels, color_channels = image_array_1.shape
+        for pixel in range(len(image_array_1)):
+            for color_channel in range(color_channels):
+                bit_1 = image_array_1[pixel][color_channel]
+                bit_2 = image_array_2[pixel][color_channel]
+                if bit_1 != bit_2:
+                    count += (bit_1 ^ bit_2).bit_count()
+
+        return f"Summary: {count} bits are different in these image pixels."
+    return f"The images sizes do not match. "
 
 
 def check_size(total_bits_to_hide: int, bits_per_block: int, width: int, height: int, color_channels: int = 3) -> bool:
     lsb_bits_available = width * height * color_channels
     block_size = 2 ** bits_per_block - 1
-    max_blocks_this_image = lsb_bits_available // block_size
+    if block_size != 0 and bits_per_block != 0:
+        max_blocks_this_image = math.floor(lsb_bits_available / block_size)
+        blocks_required = math.ceil(total_bits_to_hide / bits_per_block)
 
-    blocks_required = total_bits_to_hide // bits_per_block
-
-    if max_blocks_this_image >= blocks_required:
-        return True
+        if max_blocks_this_image >= blocks_required:
+            # print(f"lsb bit count {lsb_bits_available} block size {block_size}")
+            # print(f"max blocks this image {max_blocks_this_image} >= blocks required {blocks_required}")
+            return True
     return False
+
+
+def next_higher_power_of_two(target_num: int) -> int:
+    target_num -= 1
+    target_num |= target_num >> 1
+    target_num |= target_num >> 2
+    target_num |= target_num >> 4
+    target_num |= target_num >> 5
+    target_num |= target_num >> 6
+    target_num |= target_num >> 7
+    target_num += 1
+    return target_num
+
+
+def find_largest_block_size(total_bits_to_hide: int,
+                            width: int,
+                            height: int,
+                            color_channels: int = 3) -> int:
+
+    lsb_bits_available = width * height * color_channels
+    lsb_next_power_of_two = next_higher_power_of_two(lsb_bits_available) - 1
+    max_bits_per_block = lsb_next_power_of_two.bit_count()
+    while not check_size(total_bits_to_hide, max_bits_per_block, width, height, color_channels):
+        max_bits_per_block -= 1
+        if max_bits_per_block <= 0:
+            return 0
+    return max_bits_per_block
 
 
 def prepare_matrix(num_bits: int):
@@ -152,10 +210,12 @@ def stego_image(cover_image_filename: str,
     one_d_image = img_array.reshape(1, x * y)
     cover_lsb = one_d_image & 0b1
 
+    print(
+        f"max block size should be {find_largest_block_size(len(binary_str), width, height, color_channels)}")
+
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
         exit()
-
     encode_blocks(binary_str, block_size, matrix, bits_per_block, cover_lsb)
     message_mask = np.full((1, (x * y)), 254, dtype="uint8")
     stego_one_d = one_d_image[0] & message_mask
@@ -178,8 +238,7 @@ def encode_blocks(binary_list: [],
         message_bits = binary_list[message_offset:message_offset + bits_per_block]
         message_bits = np.array([int(i) for i in message_bits])
 
-        if 0 != len(message_bits) < bits_per_block:
-            #  pad the message bits if required to match block size.
+        if 0 != len(message_bits) < bits_per_block:  # pad the message bits to match block size.
             required_padding = bits_per_block - len(message_bits)
             message_bits = np.pad(message_bits, pad_width=(0, required_padding), mode='constant', constant_values=0)
 
