@@ -10,18 +10,19 @@ from PIL import Image
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
-@click.option('-c', '--cover', type=click.Path(exists=True), help='Filename of cover image.')
-@click.option('-s', '--stego', type=click.Path(exists=True), help='Filename of stego image.')
-@click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block')
-@click.option('--embed/--extract', '-e/-x', default=True, show_default=True, help="embed a message/or extract a message")
+@click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
+@click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
+@click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
+@click.option('--embed', '-e', is_flag=True,  help="Embed a message requires a cover file.")
+@click.option('--extract', '-x', is_flag=True,  help="eXtract a message requires a stego file.")
 # @click.option('-i', '--info', type=bool, default=False)
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
-def main(text, cover, stego, bits, embed, diff):
+def main(text, cover, stego, bits, embed,extract, diff):
     # print(text, cover, stego, bits, embed)
     if embed and cover and text and stego:
         print(f"Embedding text into {stego}.")
         stego_image(cover, text, stego, bits)
-    if not embed and stego != "" and bits > 0:
+    if extract and stego != "" and bits > 0:
         print("decoding the stego image.")
         print()
         results = unstego_image(stego, bits)
@@ -177,6 +178,8 @@ def binary_string_to_ascii(unstego_bits: [], bits_per_letter: int = 7) -> str:
         letter_int = int(letter_bin, 2)
         if 31 < letter_int < 128:
             output += chr(int(letter_bin, 2))
+        if letter_int == 0:
+            return output
     return output
 
 
@@ -191,7 +194,9 @@ def unstego_image(stego_img, bits_per_block) -> str:
     block_size = 2 ** bits_per_block - 1
     matrix = prepare_matrix(bits_per_block)
     unstego_bits = decode_blocks(stego_lsb, block_size, matrix)
-    return binary_string_to_ascii(unstego_bits)
+    decoded_bits = binary_string_to_ascii(unstego_bits)
+    message = decoded_bits.split("\0x00")
+    return message[0]
 
 
 def stego_image(cover_image_filename: str,
