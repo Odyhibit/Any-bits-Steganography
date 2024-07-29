@@ -13,6 +13,7 @@ from PIL import Image
 @click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
 @click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
+@click.option('-m', '--max', is_flag=True,help="use the Max block size possible.")
 @click.option('--embed', '-e', is_flag=True,  help="Embed a message requires a cover file.")
 @click.option('--extract', '-x', is_flag=True,  help="eXtract a message requires a stego file.")
 # @click.option('-i', '--info', type=bool, default=False)
@@ -163,8 +164,8 @@ def load_image(filename: str):
 
 def save_file(filename: str, width: int, height: int, stego_file: []):
     output_img = Image.new("RGB", (width, height))
-    numpy_array = [tuple(l) for l in stego_file]
-    output_img.putdata(numpy_array)
+    array_of_tuples = [tuple(pixel) for pixel in stego_file]
+    output_img.putdata(array_of_tuples)
     with open(filename, "wb") as file_out:
         output_img.save(file_out)
 
@@ -215,8 +216,7 @@ def stego_image(cover_image_filename: str,
     one_d_image = img_array.reshape(1, x * y)
     cover_lsb = one_d_image & 0b1
 
-    print(
-        f"max block size should be {find_largest_block_size(len(binary_str), width, height, color_channels)}")
+    print(f"max block size should be {find_largest_block_size(len(binary_str), width, height, color_channels)}")
 
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
