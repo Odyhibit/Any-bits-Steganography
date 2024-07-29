@@ -5,22 +5,24 @@ import sys
 import click
 import numpy as np
 from PIL import Image
+from trogon import tui
 
 
+@tui()
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
 @click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
 @click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
-@click.option('-m', '--max', is_flag=True, help="use the Max block size possible.")
+@click.option('-m', '--maximum', is_flag=True, help="use the Maximum block size possible.")
 @click.option('--embed', '-e', is_flag=True, help="Embed a message requires a cover file.")
 @click.option('--extract', '-x', is_flag=True, help="eXtract a message requires a stego file.")
 # @click.option('-i', '--info', is_flag=True, help="show max block size for cover image, and message.")
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
-def main(text, cover, stego, bits, max, embed, extract, diff):
+def main(text, cover, stego, bits, maximum, embed, extract, diff):
     # print(text, cover, stego, bits, embed)
-    if max and cover and text and stego and embed:
+    if maximum and cover and text and stego and embed:
         bits = get_max_block(cover, text)
         print(f"The max block size is {bits}")
     if embed and cover and text and stego:
@@ -214,20 +216,18 @@ def unstego_image(stego_img, bits_per_block) -> str:
 def stego_image(cover_image_filename: str,
                 plain_text: str,
                 stego_image_filename: str,
-                bits_per_block,
-                color_channels: int = 3):
+                bits_per_block):
     matrix = prepare_matrix(bits_per_block)
     block_size = 2 ** bits_per_block - 1
     binary_str = ascii_to_binary_string(plain_text)
 
     img = Image.open(cover_image_filename)
     width, height = img.width, img.height
+    color_channels = len(img.getbands())
     img_array = np.array(img.getdata())
     x, y = img_array.shape
     one_d_image = img_array.reshape(1, x * y)
     cover_lsb = one_d_image & 0b1
-
-    print(f"max block size should be {find_largest_block_size(len(binary_str), width, height, color_channels)}")
 
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
