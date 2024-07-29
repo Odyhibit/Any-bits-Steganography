@@ -13,13 +13,16 @@ from PIL import Image
 @click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
 @click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
-@click.option('-m', '--max', is_flag=True,help="use the Max block size possible.")
-@click.option('--embed', '-e', is_flag=True,  help="Embed a message requires a cover file.")
-@click.option('--extract', '-x', is_flag=True,  help="eXtract a message requires a stego file.")
-# @click.option('-i', '--info', type=bool, default=False)
+@click.option('-m', '--max', is_flag=True, help="use the Max block size possible.")
+@click.option('--embed', '-e', is_flag=True, help="Embed a message requires a cover file.")
+@click.option('--extract', '-x', is_flag=True, help="eXtract a message requires a stego file.")
+# @click.option('-i', '--info', is_flag=True, help="show max block size for cover image, and message.")
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
-def main(text, cover, stego, bits, embed,extract, diff):
+def main(text, cover, stego, bits, max, embed, extract, diff):
     # print(text, cover, stego, bits, embed)
+    if max and cover and text and stego and embed:
+        bits = get_max_block(cover, text)
+        print(f"The max block size is {bits}")
     if embed and cover and text and stego:
         print(f"Embedding text into {stego}.")
         stego_image(cover, text, stego, bits)
@@ -88,7 +91,6 @@ def find_largest_block_size(total_bits_to_hide: int,
                             width: int,
                             height: int,
                             color_channels: int = 3) -> int:
-
     lsb_bits_available = width * height * color_channels
     lsb_next_power_of_two = next_higher_power_of_two(lsb_bits_available) - 1
     max_bits_per_block = lsb_next_power_of_two.bit_count()
@@ -97,6 +99,15 @@ def find_largest_block_size(total_bits_to_hide: int,
         if max_bits_per_block <= 0:
             return 0
     return max_bits_per_block
+
+
+def get_max_block(cover_image: str, message: str) -> int:
+    cover = Image.open(cover_image)
+    width = cover.width
+    height = cover.height
+    channels = len(cover.getbands())
+    message_bits = len(message) * 7 + 1
+    return find_largest_block_size(message_bits, width, height, channels)
 
 
 def prepare_matrix(num_bits: int):
