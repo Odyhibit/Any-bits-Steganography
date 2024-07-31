@@ -89,7 +89,7 @@ def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename: st
 
     byte = secret_file.read(1)
     while byte:
-        byte = int.from_bytes(byte)
+        byte = int.from_bytes(byte, "little")
         for bit in range(7, -1, -1):
             bit_to_hide = bool((byte >> bit) & 1)
             channel, bit_position = hide_bits[hide_bit_index]

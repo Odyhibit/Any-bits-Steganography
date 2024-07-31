@@ -5,10 +5,9 @@ import sys
 import click
 import numpy as np
 from PIL import Image
-from trogon import tui
 
 
-@tui()
+
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
