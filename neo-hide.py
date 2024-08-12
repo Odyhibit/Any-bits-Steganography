@@ -21,8 +21,9 @@ from PIL import Image
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
 def main(text, cover, stego, bits, maximum, embed, extract, diff):
     # print(text, cover, stego, bits, embed)
-    if maximum:
+    if maximum and embed:
         bits = get_max_block(cover, text)
+        print(f"Using {bits} bits per block. Block size is {2 ** bits - 1}")
     if embed and cover and text and stego:
         print(f"Embedding text into {stego}.")
         stego_image(cover, text, stego, bits)

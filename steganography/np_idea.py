@@ -33,10 +33,10 @@ def set_bit(original_byte: int, index: int, hide_bit: bool) -> int:
     return original_byte  # Return the result, we're done.
 
 
-def build_hiding_spots(planes: [], channels: str) -> []:
+def build_hiding_spots(planes: [], channel_order: str) -> []:
     hiding_bits = []
     color_channels = "RGBA"
-    for letter in channels:
+    for letter in channel_order:
         channel_index = color_channels.index(letter)
         bits = get_channel_bits(planes[channel_index])
         # print(letter, channel_index, bits)
