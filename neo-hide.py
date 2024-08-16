@@ -7,10 +7,10 @@ import numpy as np
 from PIL import Image
 
 
-
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
+@click.option('-f', "--file", type=click.Path(exists=True), help='filename of text file.')
 @click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
 @click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
@@ -19,14 +19,21 @@ from PIL import Image
 @click.option('--extract', '-x', is_flag=True, help="eXtract a message requires a stego file.")
 # @click.option('-i', '--info', is_flag=True, help="show max block size for cover image, and message.")
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
-def main(text, cover, stego, bits, maximum, embed, extract, diff):
+def main(text, file, cover, stego, bits, maximum, embed, extract, diff):
     # print(text, cover, stego, bits, embed)
+
+    bits_per_byte = 7
+    if file:
+        bits_per_byte = 8
+    if text and file:
+        print("Please provide only one text or file.")
+        sys.exit(1)
     if maximum and embed:
-        bits = get_max_block(cover, text)
+        bits = get_max_block(cover, text, bits_per_byte)
         print(f"Using {bits} bits per block. Block size is {2 ** bits - 1}")
     if embed and cover and text and stego:
         print(f"Embedding text into {stego}.")
-        stego_image(cover, text, stego, bits)
+        stego_image(cover, text, stego, bits, bits_per_byte)
     if extract and stego != "" and bits > 0:
         print("decoding the stego image.")
         print()
@@ -81,9 +88,6 @@ def next_higher_power_of_two(target_num: int) -> int:
     target_num |= target_num >> 1
     target_num |= target_num >> 2
     target_num |= target_num >> 4
-    target_num |= target_num >> 5
-    target_num |= target_num >> 6
-    target_num |= target_num >> 7
     target_num += 1
     return target_num
 
@@ -102,12 +106,12 @@ def find_largest_block_size(total_bits_to_hide: int,
     return max_bits_per_block
 
 
-def get_max_block(cover_image: str, message: str) -> int:
+def get_max_block(cover_image: str, message: str, bits_per_block) -> int:
     cover = Image.open(cover_image)
     width = cover.width
     height = cover.height
     channels = len(cover.getbands())
-    message_bits = len(message) * 7 + 1
+    message_bits = len(message) * bits_per_block + 1
     return find_largest_block_size(message_bits, width, height, channels)
 
 
@@ -164,14 +168,14 @@ def unhide_block(matrix, stego):
     return message
 
 
-def load_image(filename: str):
+def load_image_to_one_d(filename: str):
     img = Image.open(filename)
     width, height = img.width, img.height
     img_array = np.array(img.getdata())
     x, y = img_array.shape
     one_d_image = img_array.reshape(1, x * y)
-    lsb = one_d_image & 0b1
-    return width, height, lsb
+    bands = len(img.getbands())
+    return width, height, one_d_image, bands
 
 
 def save_file(filename: str, width: int, height: int, stego_file: []):
@@ -203,7 +207,8 @@ def ascii_to_binary_string(plain_text: str, bits_per_letter: int = 7) -> str:
 
 
 def unstego_image(stego_img, bits_per_block) -> str:
-    width, height, stego_lsb = load_image(stego_img)
+    width, height, one_d_image, bands = load_image_to_one_d(stego_img)
+    stego_lsb = one_d_image & 0b1
     block_size = 2 ** bits_per_block - 1
     matrix = prepare_matrix(bits_per_block)
     unstego_bits = decode_blocks(stego_lsb, block_size, matrix)
@@ -212,33 +217,24 @@ def unstego_image(stego_img, bits_per_block) -> str:
     return message[0]
 
 
-def stego_image(cover_image_filename: str,
-                plain_text: str,
-                stego_image_filename: str,
-                bits_per_block):
+def stego_image(cover_filename: str, plain_text: str, stego_filename: str, bits_per_block: int, bits_per_byte: int):
     matrix = prepare_matrix(bits_per_block)
     block_size = 2 ** bits_per_block - 1
-    binary_str = ascii_to_binary_string(plain_text)
-
-    img = Image.open(cover_image_filename)
-    width, height = img.width, img.height
-    color_channels = len(img.getbands())
-    img_array = np.array(img.getdata())
-    x, y = img_array.shape
-    one_d_image = img_array.reshape(1, x * y)
+    binary_str = ascii_to_binary_string(plain_text, bits_per_byte)
+    width, height, one_d_image, color_channels = load_image_to_one_d(cover_filename)
     cover_lsb = one_d_image & 0b1
 
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
         exit()
     encode_blocks(binary_str, block_size, matrix, bits_per_block, cover_lsb)
-    message_mask = np.full((1, (x * y)), 254, dtype="uint8")
+    message_mask = np.full((1, (width * height)), 254, dtype="uint8")
     stego_one_d = one_d_image[0] & message_mask
     stego_one_d += cover_lsb
     rows, cols = stego_one_d.shape
     stego_file = stego_one_d.reshape(cols // color_channels, color_channels)
 
-    save_file(stego_image_filename, width, height, stego_file)
+    save_file(stego_filename, width, height, stego_file)
 
 
 def encode_blocks(binary_list: [],
@@ -264,9 +260,6 @@ def encode_blocks(binary_list: [],
 
 
 if __name__ == "__main__":
-    # stego_image("test_images/rgb_test_image.png","This is a test message","test_images/matrix_test_2.png", 14)
-    # print(unstego_image("test_images/matrix_test_2.png", 14))
-    # print(unstego_image("test_images/rgb_test_matrix_stego.png", 14))
     if len(sys.argv) == 1:
         main(['--help'])
     else:

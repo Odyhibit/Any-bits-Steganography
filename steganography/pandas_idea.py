@@ -11,7 +11,7 @@ def get_image_data_bool(filename: str):
     """
     img = Image.open(filename)
     img_array = np.array(img.getdata(), dtype="uint8")
-    img_bool = np.unpackbits(img_array, axis=1)
+    img_bool = np.unpackbits(img_array, axis=1, bitorder="little")
     return img_bool.T
 
 
@@ -20,7 +20,8 @@ lsb_checkboxes = [False, False, False, False, False, False, False, True,
                   False, False, False, False, False, False, False, True,
                   False, False, False, False, False, False, False, True]
 cover_img = get_image_data_bool(cover_image)
-print(cover_img)
+print(cover_img.T.shape)
+print(cover_img.T[0:8, 0:24])
 
 pd_idea = pd.DataFrame(cover_img)
 lsb = pd_idea.loc[lsb_checkboxes]
@@ -34,4 +35,4 @@ np_answer = np.packbits(pd_idea.T, axis=1)
 
 print(pd_idea)
 print(lots_o_ones.shape)
-print(np_answer)
+print(np_answer.shape)
