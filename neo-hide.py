@@ -227,8 +227,9 @@ def stego_image(cover_filename: str, plain_text: str, stego_filename: str, bits_
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
         exit()
+
     encode_blocks(binary_str, block_size, matrix, bits_per_block, cover_lsb)
-    message_mask = np.full((1, (width * height)), 254, dtype="uint8")
+    message_mask = np.full((1, (width * height * color_channels)), 254, dtype="uint8")
     stego_one_d = one_d_image[0] & message_mask
     stego_one_d += cover_lsb
     rows, cols = stego_one_d.shape
@@ -237,16 +238,12 @@ def stego_image(cover_filename: str, plain_text: str, stego_filename: str, bits_
     save_file(stego_filename, width, height, stego_file)
 
 
-def encode_blocks(binary_list: [],
-                  block_size: int,
-                  matrix: [],
-                  bits_per_block: int,
-                  cover_lsb: []):
-    for i, letter in enumerate(binary_list):
+def encode_blocks(bin_lst: [], block_size: int, matrix: [], bits_per_block: int, cover_lsb: []):
+    for i, letter in enumerate(bin_lst):
         cover_offset = i * block_size
         cover_block = cover_lsb[0][cover_offset:cover_offset + block_size]
         message_offset = i * bits_per_block
-        message_bits = binary_list[message_offset:message_offset + bits_per_block]
+        message_bits = bin_lst[message_offset:message_offset + bits_per_block]
         message_bits = np.array([int(i) for i in message_bits])
 
         if 0 != len(message_bits) < bits_per_block:  # pad the message bits to match block size.
