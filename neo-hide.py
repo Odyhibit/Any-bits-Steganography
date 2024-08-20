@@ -10,14 +10,13 @@ from PIL import Image
 @click.command()
 @click.version_option(version="0.1", prog_name="neo_hide")
 @click.option('-t', '--text', help='Text enclosed in single quotes.')
-@click.option('-f', "--file", type=click.Path(exists=True), help='filename of text file.')
+@click.option('-f', "--file", type=click.Path(exists=True), help='filename of file to hide.')
 @click.option('-c', '--cover', type=click.Path(exists=True), help='filename of Cover image.')
 @click.option('-s', '--stego', type=click.Path(), help='filename of Stego image.')
 @click.option('-b', '--bits', type=int, default=7, show_default=True, help='The number of bits to hide per block.')
 @click.option('-m', '--maximum', is_flag=True, help="use the Maximum block size possible.")
 @click.option('--embed', '-e', is_flag=True, help="Embed a message requires a cover file.")
 @click.option('--extract', '-x', is_flag=True, help="eXtract a message requires a stego file.")
-# @click.option('-i', '--info', is_flag=True, help="show max block size for cover image, and message.")
 @click.option('-d', '--diff', is_flag=True, help="Count the number of bits that are different between two images.")
 def main(text, file, cover, stego, bits, maximum, embed, extract, diff):
     # print(text, cover, stego, bits, embed)
@@ -223,6 +222,9 @@ def stego_image(cover_filename: str, plain_text: str, stego_filename: str, bits_
     binary_str = ascii_to_binary_string(plain_text, bits_per_byte)
     width, height, one_d_image, color_channels = load_image_to_one_d(cover_filename)
     cover_lsb = one_d_image & 0b1
+
+    if check_size(len(binary_str) + 1, bits_per_block, width, height, color_channels):
+        binary_str += "0000000"
 
     if not check_size(len(binary_str), bits_per_block, width, height, color_channels):
         print(f"Not enough room in this image for that message with that block size. Reduce one or the other. ")
