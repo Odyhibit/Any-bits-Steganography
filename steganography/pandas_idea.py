@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 
-def get_image_data_bool(filename: str):
+def get_image_data_bool(filename: str) -> (int, int, [bool]):
     """
     :param filename: path to the image
     :return: a numpy array of bits, with 24 individual bits per row.

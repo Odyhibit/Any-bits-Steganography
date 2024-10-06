@@ -201,7 +201,6 @@ def binary_string_to_ascii(unstego_bits: [], bits_per_letter: int = 7) -> str:
 
 def ascii_to_binary_string(plain_text: str, bits_per_letter: int = 7) -> str:
     # turn 7 bit ascii into list of binary string
-
     return "".join([bin(i)[2:].zfill(bits_per_letter) for i in plain_text.encode("ascii")])
 
 
@@ -220,6 +219,7 @@ def stego_image(cover_filename: str, plain_text: str, stego_filename: str, bits_
     matrix = prepare_matrix(bits_per_block)
     block_size = 2 ** bits_per_block - 1
     binary_str = ascii_to_binary_string(plain_text, bits_per_byte)
+    print(binary_str)
     width, height, one_d_image, color_channels = load_image_to_one_d(cover_filename)
     cover_lsb = one_d_image & 0b1
 

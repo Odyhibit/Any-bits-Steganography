@@ -63,7 +63,7 @@ def main():
 
 
 def stego(cover_file: str, hidden_file: str, bit_planes: [], output_filename: str, offset: int = 0):
-    channel_order = "ARGB"
+    channel_order = "RGBA"
     cover_image = Image.open(cover_file)
     image = cover_image.convert("RGBA").getdata()
 
