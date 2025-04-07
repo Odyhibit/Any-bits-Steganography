@@ -2,97 +2,446 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Any-bits Stego</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Any-bits Steganography Tool</title>
   <style>
     :root {
-      --primary-color: #2c3e50;
+      --primary-color: #3498db;
+      --primary-dark: #2980b9;
       --dark-bg: #1e1e1e;
       --light-bg: #f5f5f5;
-      --text-color: #333;
+      --text-color: #ecf0f1;
+      --accent-color: #e74c3c;
+      --section-bg: #2c3e50;
+      --border-radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       background-color: var(--dark-bg);
-      color: var(--light-bg);
-      font-family: sans-serif;
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 2rem;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
     }
 
     h1 {
       color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .panel {
+      background-color: var(--section-bg);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .file-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .file-input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .file-input {
+      position: relative;
+      padding: 1.5rem;
+      border: 2px dashed var(--primary-color);
+      border-radius: var(--border-radius);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+    }
+
+    .file-input:hover {
+      border-color: var(--primary-dark);
+      background-color: rgba(52, 152, 219, 0.1);
+    }
+
+    .file-input input[type="file"] {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .file-name {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #aaa;
+      word-break: break-all;
+    }
+
+    .preview-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: var(--border-radius);
+      display: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
     label, legend {
-      color: var(--light-bg);
+      color: var(--text-color);
       font-weight: bold;
-    }
-
-    input[type="file"], input[type="checkbox"] {
-      margin: 0.25rem;
+      display: block;
+      margin-bottom: 0.5rem;
     }
 
     fieldset {
       border: 1px solid var(--primary-color);
       padding: 1rem;
       margin-top: 1rem;
+      border-radius: var(--border-radius);
+    }
+
+    .bit-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .bit-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .bit-channel {
+      background-color: rgba(0, 0, 0, 0.2);
+      padding: 0.75rem;
+      border-radius: var(--border-radius);
+    }
+
+    .bit-channel-title {
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .bit-selector label {
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.25rem;
+      font-weight: normal;
+    }
+
+    .bit-selector input[type="checkbox"] {
+      margin-right: 0.5rem;
+      width: 16px;
+      height: 16px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
     }
 
     button {
       background-color: var(--primary-color);
       color: white;
-      padding: 0.5rem 1rem;
-      margin: 0.5rem 0;
+      padding: 0.75rem 1.5rem;
       border: none;
-      border-radius: 4px;
+      border-radius: var(--border-radius);
       cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      flex: 1;
     }
 
-    button:hover {
-      background-color: #34495e;
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
     }
 
-    a {
+    button:hover:enabled {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    #extractBtn {
+      background-color: var(--accent-color);
+    }
+
+    #extractBtn:hover:enabled {
+      background-color: #c0392b;
+    }
+
+    .download-links {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    a.download-button {
       display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: #27ae60;
+      color: white;
+      text-decoration: none;
+      border-radius: var(--border-radius);
+      font-weight: bold;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    a.download-button:hover {
+      background-color: #219653;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    #canvas {
+      display: none;
+    }
+
+    .capacity-indicator {
       margin-top: 1rem;
-      color: var(--primary-color);
-    }
-
-    #bitSelector label {
-      font-family: monospace;
-      display: inline-block;
-      width: 3.5em;
+      font-size: 0.9rem;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-  <h1>Any-bits-you-want Steganography</h1>
+  <div class="container">
+    <header>
+      <h1>Any-bits Steganography</h1>
+      <p class="subtitle">Hide any file in an image using custom bit selection</p>
+    </header>
 
-  <label>Cover/Stego Image (PNG): <input type="file" id="coverInput" accept="image/png" /></label><br>
-  <label>File to Hide: <input type="file" id="fileInput" /></label><br>
+    <div class="panel">
+      <div class="file-inputs">
+        <div class="file-input-group">
+          <label for="coverInput">Cover Image (PNG)</label>
+          <div class="file-input">
+            <input type="file" id="coverInput" accept="image/png" />
+            <p>Drop or click to select image</p>
+          </div>
+          <div class="file-name" id="coverFileName">No file selected</div>
+          <div class="preview-container">
+            <img id="imagePreview" class="image-preview" alt="Preview" />
+          </div>
+          <div class="capacity-indicator" id="capacityIndicator"></div>
+        </div>
 
-  <fieldset>
-    <legend>Select Bits to Use</legend>
-    <div id="bitSelector"></div>
-  </fieldset>
+        <div class="file-input-group">
+          <label for="fileInput">File to Hide</label>
+          <div class="file-input">
+            <input type="file" id="fileInput" />
+            <p>Drop or click to select file</p>
+          </div>
+          <div class="file-name" id="hiddenFileName">No file selected</div>
+        </div>
+      </div>
 
-  <button onclick="embedFile()">Embed</button>
-  <button onclick="extractFile()">Extract</button>
-  <br><br>
-  <a id="downloadLink" style="display:none">Download Stego Image</a>
-  <a id="extractedLink" style="display:none">Download Extracted File</a>
+      <fieldset>
+        <legend>Select Bits to Use</legend>
+        <div class="bit-selector" id="bitSelector"></div>
+      </fieldset>
 
-  <canvas id="canvas" style="display:none"></canvas>
+      <div class="buttons">
+        <button id="embedBtn" onclick="embedFile()" disabled>Embed File</button>
+        <button id="extractBtn" onclick="extractFile()" disabled>Extract File</button>
+      </div>
+
+      <div class="download-links">
+        <a id="downloadLink" class="download-button" style="display:none">Download Stego Image</a>
+        <a id="extractedLink" class="download-button" style="display:none">Download Extracted File</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>Any bits you want steganography tool - Hide your files in images</p>
+    </footer>
+  </div>
+
+  <canvas id="canvas"></canvas>
 
   <script>
+    // Initialize bit selector with channels R, G, B, A
     const bitSelector = document.getElementById('bitSelector');
-    ['R', 'G', 'B', 'A'].forEach(channel => {
+    const channels = ['R', 'G', 'B', 'A'];
+    const channelColors = {
+      'R': '#e74c3c',
+      'G': '#2ecc71',
+      'B': '#3498db',
+      'A': '#95a5a6'
+    };
+
+    channels.forEach(channel => {
+      const channelDiv = document.createElement('div');
+      channelDiv.className = 'bit-channel';
+      
+      const channelTitle = document.createElement('div');
+      channelTitle.className = 'bit-channel-title';
+      channelTitle.textContent = channel === 'R' ? 'Red' : 
+                                 channel === 'G' ? 'Green' : 
+                                 channel === 'B' ? 'Blue' : 'Alpha';
+      channelTitle.style.color = channelColors[channel];
+      channelDiv.appendChild(channelTitle);
+      
       for (let i = 7; i >= 0; i--) {
         const id = `${channel}${i}`;
-        const checkbox = `<label><input type="checkbox" id="${id}" />${id}</label>`;
-        bitSelector.innerHTML += checkbox;
+        const isChecked = (channel === 'R' && i === 0) || (channel === 'G' && i === 0) || (channel === 'B' && i === 0);
+        
+        const label = document.createElement('label');
+        label.htmlFor = id;
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = id;
+        checkbox.checked = isChecked;
+        checkbox.addEventListener('change', updateCapacityIndicator);
+        
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(`Bit ${i}`));
+        
+        channelDiv.appendChild(label);
       }
-      bitSelector.innerHTML += '<br>';
+      
+      bitSelector.appendChild(channelDiv);
     });
+
+    const coverInput = document.getElementById('coverInput');
+    const fileInput = document.getElementById('fileInput');
+    const embedBtn = document.getElementById('embedBtn');
+    const extractBtn = document.getElementById('extractBtn');
+    const imagePreview = document.getElementById('imagePreview');
+    const coverFileName = document.getElementById('coverFileName');
+    const hiddenFileName = document.getElementById('hiddenFileName');
+    const capacityIndicator = document.getElementById('capacityIndicator');
+
+    // Update file names and preview when files are selected
+    coverInput.addEventListener('change', function() {
+      updateButtons();
+      if (this.files.length > 0) {
+        const file = this.files[0];
+        coverFileName.textContent = file.name;
+        
+        // Create image preview
+        const url = URL.createObjectURL(file);
+        imagePreview.src = url;
+        imagePreview.style.display = 'block';
+        imagePreview.onload = function() {
+          updateCapacityIndicator();
+          URL.revokeObjectURL(url);
+        };
+      } else {
+        coverFileName.textContent = 'No file selected';
+        imagePreview.style.display = 'none';
+        capacityIndicator.textContent = '';
+      }
+    });
+
+    fileInput.addEventListener('change', function() {
+      updateButtons();
+      if (this.files.length > 0) {
+        const file = this.files[0];
+        hiddenFileName.textContent = file.name + ` (${formatFileSize(file.size)})`;
+        updateCapacityIndicator();
+      } else {
+        hiddenFileName.textContent = 'No file selected';
+      }
+    });
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' bytes';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      else return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function updateCapacityIndicator() {
+      const coverFile = coverInput.files[0];
+      const hiddenFile = fileInput.files[0];
+      
+      if (!coverFile) return;
+      
+      // Calculate total available bits
+      let totalBits = 0;
+      channels.forEach(channel => {
+        for (let i = 7; i >= 0; i--) {
+          if (document.getElementById(`${channel}${i}`).checked) {
+            totalBits++;
+          }
+        }
+      });
+      
+      if (imagePreview.naturalWidth && imagePreview.naturalHeight) {
+        const imgPixels = imagePreview.naturalWidth * imagePreview.naturalHeight;
+        const capacityBytes = Math.floor((imgPixels * totalBits) / 8);
+        capacityIndicator.textContent = `Image capacity: ${formatFileSize(capacityBytes)}`;
+        
+        if (hiddenFile) {
+          // Include header size (5 bytes for "STEGO", filename, null terminator, and 4 bytes for size)
+          const headerSize = 5 + hiddenFile.name.length + 1 + 4;
+          const totalSize = headerSize + hiddenFile.size;
+          
+          if (totalSize > capacityBytes) {
+            capacityIndicator.innerHTML = `<span style="color: #e74c3c;">⚠️ File too large! Need ${formatFileSize(totalSize)}, capacity is ${formatFileSize(capacityBytes)}</span>`;
+          } else {
+            const usagePercentage = Math.round((totalSize / capacityBytes) * 100);
+            capacityIndicator.innerHTML = `File uses ${formatFileSize(totalSize)} (${usagePercentage}% of capacity)`;
+          }
+        }
+      }
+    }
+
+    function updateButtons() {
+      embedBtn.disabled = !(coverInput.files.length && fileInput.files.length);
+      extractBtn.disabled = !(coverInput.files.length);
+    }
 
     function toBinaryString(buffer) {
       return Array.from(new Uint8Array(buffer)).map(b => b.toString(2).padStart(8, '0')).join('');
@@ -110,117 +459,197 @@
       const coverFile = document.getElementById('coverInput').files[0];
       const hiddenFile = document.getElementById('fileInput').files[0];
       if (!coverFile || !hiddenFile) return alert("Please select both files.");
+      
+      embedBtn.disabled = true;
+      embedBtn.textContent = "Processing...";
 
-      const coverImg = new Image();
-      coverImg.src = URL.createObjectURL(coverFile);
-      await coverImg.decode();
+      try {
+        const coverImg = new Image();
+        coverImg.src = URL.createObjectURL(coverFile);
+        await coverImg.decode();
 
-      const canvas = document.getElementById('canvas');
-      canvas.width = coverImg.width;
-      canvas.height = coverImg.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(coverImg, 0, 0);
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imgData.data;
+        const canvas = document.getElementById('canvas');
+        canvas.width = coverImg.width;
+        canvas.height = coverImg.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(coverImg, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
 
-      const hiddenArrayBuffer = await hiddenFile.arrayBuffer();
-      const filenameBytes = new TextEncoder().encode(hiddenFile.name + '\0');
-      const header = new Uint8Array(5 + filenameBytes.length + 4);
-      header.set(new TextEncoder().encode("STEGO"), 0);
-      header.set(filenameBytes, 5);
-      new DataView(header.buffer).setUint32(5 + filenameBytes.length, hiddenArrayBuffer.byteLength, true);
+        const hiddenArrayBuffer = await hiddenFile.arrayBuffer();
+        const filenameBytes = new TextEncoder().encode(hiddenFile.name + '\0');
+        const header = new Uint8Array(5 + filenameBytes.length + 4);
+        header.set(new TextEncoder().encode("STEGO"), 0);
+        header.set(filenameBytes, 5);
+        new DataView(header.buffer).setUint32(5 + filenameBytes.length, hiddenArrayBuffer.byteLength, true);
 
-      const fullData = new Uint8Array([...header, ...new Uint8Array(hiddenArrayBuffer)]);
-      const binStr = Array.from(fullData).map(b => b.toString(2).padStart(8, '0')).join('');
+        const fullData = new Uint8Array([...header, ...new Uint8Array(hiddenArrayBuffer)]);
+        const binStr = Array.from(fullData).map(b => b.toString(2).padStart(8, '0')).join('');
 
-      const bitmask = [[], [], [], []];
-      ['R', 'G', 'B', 'A'].forEach((ch, i) => {
-        for (let b = 7; b >= 0; b--) {
-          if (document.getElementById(`${ch}${b}`).checked) bitmask[i].push(b);
+        const bitmask = [[], [], [], []];
+        ['R', 'G', 'B', 'A'].forEach((ch, i) => {
+          for (let b = 7; b >= 0; b--) {
+            if (document.getElementById(`${ch}${b}`).checked) bitmask[i].push(b);
+          }
+        });
+
+        let bitIdx = 0;
+        for (let px = 0; px < data.length; px += 4) {
+          for (let c = 0; c < 4; c++) {
+            bitmask[c].forEach(pos => {
+              if (bitIdx >= binStr.length) return;
+              const bit = parseInt(binStr[bitIdx]);
+              const mask = 1 << pos;
+              data[px + c] = (data[px + c] & ~mask) | (bit << pos);
+              bitIdx++;
+            });
+          }
+          if (bitIdx >= binStr.length) break;
         }
-      });
 
-      let bitIdx = 0;
-      for (let px = 0; px < data.length; px += 4) {
-        for (let c = 0; c < 4; c++) {
-          bitmask[c].forEach(pos => {
-            if (bitIdx >= binStr.length) return;
-            const bit = parseInt(binStr[bitIdx]);
-            const mask = 1 << pos;
-            data[px + c] = (data[px + c] & ~mask) | (bit << pos);
-            bitIdx++;
-          });
+        if (bitIdx < binStr.length) {
+          alert("Cover image is too small for this data and bit selection. Please use a larger image or select more bits.");
+          embedBtn.disabled = false;
+          embedBtn.textContent = "Embed File";
+          return;
         }
-        if (bitIdx >= binStr.length) break;
-      }
 
-      if (bitIdx < binStr.length) {
-        alert("Cover image is too small for this data and bit depth.");
-        return;
+        ctx.putImageData(imgData, 0, 0);
+        
+        canvas.toBlob(blob => {
+          const url = URL.createObjectURL(blob);
+          const link = document.getElementById("downloadLink");
+          link.href = url;
+          link.download = "stego_" + coverFile.name;
+          link.style.display = "block";
+          link.textContent = "Download Stego Image";
+          
+          // Show preview of the stego image
+          imagePreview.src = url;
+          
+          embedBtn.disabled = false;
+          embedBtn.textContent = "Embed File";
+        }, "image/png");
+      } catch (err) {
+        console.error(err);
+        alert("Error processing the image: " + err.message);
+        embedBtn.disabled = false;
+        embedBtn.textContent = "Embed File";
       }
-
-      ctx.putImageData(imgData, 0, 0);
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const link = document.getElementById("downloadLink");
-        link.href = url;
-        link.download = "stego.png";
-        link.style.display = "inline";
-        link.textContent = "Download Stego Image";
-      }, "image/png");
     }
 
     async function extractFile() {
       const coverFile = document.getElementById('coverInput').files[0];
       if (!coverFile) return alert("Please select a stego image.");
+      
+      extractBtn.disabled = true;
+      extractBtn.textContent = "Extracting...";
 
-      const coverImg = new Image();
-      coverImg.src = URL.createObjectURL(coverFile);
-      await coverImg.decode();
+      try {
+        const coverImg = new Image();
+        coverImg.src = URL.createObjectURL(coverFile);
+        await coverImg.decode();
 
-      const canvas = document.getElementById('canvas');
-      canvas.width = coverImg.width;
-      canvas.height = coverImg.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(coverImg, 0, 0);
-      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        const canvas = document.getElementById('canvas');
+        canvas.width = coverImg.width;
+        canvas.height = coverImg.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(coverImg, 0, 0);
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
-      const bitmask = [[], [], [], []];
-      ['R', 'G', 'B', 'A'].forEach((ch, i) => {
-        for (let b = 7; b >= 0; b--) {
-          if (document.getElementById(`${ch}${b}`).checked) bitmask[i].push(b);
+        const bitmask = [[], [], [], []];
+        ['R', 'G', 'B', 'A'].forEach((ch, i) => {
+          for (let b = 7; b >= 0; b--) {
+            if (document.getElementById(`${ch}${b}`).checked) bitmask[i].push(b);
+          }
+        });
+
+        let binStr = '';
+        for (let px = 0; px < data.length; px += 4) {
+          for (let c = 0; c < 4; c++) {
+            bitmask[c].forEach(pos => {
+              const bit = (data[px + c] >> pos) & 1;
+              binStr += bit;
+            });
+          }
         }
-      });
 
-      let binStr = '';
-      for (let px = 0; px < data.length; px += 4) {
-        for (let c = 0; c < 4; c++) {
-          bitmask[c].forEach(pos => {
-            const bit = (data[px + c] >> pos) & 1;
-            binStr += bit;
-          });
+        const bytes = binaryToBytes(binStr);
+        const startIdx = bytes.findIndex((_, i) =>
+          bytes[i] === 83 && bytes[i + 1] === 84 && bytes[i + 2] === 69 && bytes[i + 3] === 71 && bytes[i + 4] === 79);
+          
+        if (startIdx === -1) {
+          alert("No STEGO header found. Please check if this is a stego image or if you've selected the right bits.");
+          extractBtn.disabled = false;
+          extractBtn.textContent = "Extract File";
+          return;
         }
+
+        let i = startIdx + 5;
+        let end = i;
+        while (end < bytes.length && bytes[end] !== 0) end++;
+        const filename = new TextDecoder().decode(bytes.slice(i, end));
+        const size = new DataView(bytes.buffer).getUint32(end + 1, true);
+        const fileBytes = bytes.slice(end + 5, end + 5 + size);
+
+        const blob = new Blob([fileBytes]);
+        const url = URL.createObjectURL(blob);
+        const link = document.getElementById("extractedLink");
+        link.href = url;
+        link.download = filename || "output.bin";
+        link.style.display = "block";
+        link.textContent = "Download Extracted File: " + filename + ` (${formatFileSize(fileBytes.length)})`;
+      } catch (err) {
+        console.error(err);
+        alert("Error extracting the file: " + err.message);
+      } finally {
+        extractBtn.disabled = false;
+        extractBtn.textContent = "Extract File";
       }
+    }
 
-      const bytes = binaryToBytes(binStr);
-      const startIdx = bytes.findIndex((_, i) =>
-        bytes[i] === 83 && bytes[i + 1] === 84 && bytes[i + 2] === 69 && bytes[i + 3] === 71 && bytes[i + 4] === 79);
-      if (startIdx === -1) return alert("No STEGO header found.");
+    // Add drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      document.querySelectorAll('.file-input').forEach(input => {
+        input.addEventListener(eventName, preventDefaults, false);
+      });
+    });
 
-      let i = startIdx + 5;
-      let end = i;
-      while (end < bytes.length && bytes[end] !== 0) end++;
-      const filename = new TextDecoder().decode(bytes.slice(i, end));
-      const size = new DataView(bytes.buffer).getUint32(end + 1, true);
-      const fileBytes = bytes.slice(end + 5, end + 5 + size);
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
-      const blob = new Blob([fileBytes]);
-      const url = URL.createObjectURL(blob);
-      const link = document.getElementById("extractedLink");
-      link.href = url;
-      link.download = filename || "output.bin";
-      link.style.display = "inline";
-      link.textContent = "Download Extracted File";
+    document.querySelectorAll('.file-input').forEach(inputArea => {
+      inputArea.addEventListener('dragenter', highlight, false);
+      inputArea.addEventListener('dragover', highlight, false);
+      inputArea.addEventListener('dragleave', unhighlight, false);
+      inputArea.addEventListener('drop', handleDrop, false);
+    });
+
+    function highlight(e) {
+      e.currentTarget.style.backgroundColor = 'rgba(52, 152, 219, 0.2)';
+      e.currentTarget.style.borderColor = '#3498db';
+    }
+
+    function unhighlight(e) {
+      e.currentTarget.style.backgroundColor = '';
+      e.currentTarget.style.borderColor = '';
+    }
+
+    function handleDrop(e) {
+      unhighlight(e);
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      
+      if (files.length > 0) {
+        const fileInput = e.currentTarget.querySelector('input[type="file"]');
+        fileInput.files = files;
+        
+        // Trigger change event manually
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
+      }
     }
   </script>
 </body>
