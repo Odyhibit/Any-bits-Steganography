@@ -1,4 +1,6 @@
 # Any bits you want
+Minimal web version https://odyhibit.github.io/Any-bits-Steganography/
+
 Installation
 
 Requires Python 
